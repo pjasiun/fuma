@@ -1,0 +1,19 @@
+{
+  "name": "fuma",
+  "version": "0.0.1",
+  "description": "Fussball Manager for Slack",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pjasiun/fuma.git"
+  },
+  "author": "Piotr Jasiun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pjasiun/fuma/issues"
+  },
+  "homepage": "https://github.com/pjasiun/fuma#readme"
+}

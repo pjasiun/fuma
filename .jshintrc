@@ -1,0 +1,17 @@
+{
+	"browser": true,
+	"esnext": true,
+	"node": true,
+
+	"immed": true,
+	"latedef": "nofunc",
+	"noarg": true,
+	"nonbsp": true,
+	"undef": true,
+	"unused": true,
+	"strict": true,
+	"varstmt": true,
+
+	"globalstrict": true,
+	"predef": [ "console" ]
+}
