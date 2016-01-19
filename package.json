@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/pjasiun/fuma/issues"
   },
-  "homepage": "https://github.com/pjasiun/fuma#readme"
+  "homepage": "https://github.com/pjasiun/fuma#readme",
+  "dependencies": {
+    "elo-rank": "^1.0.0"
+  }
 }
