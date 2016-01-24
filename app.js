@@ -1,3 +1,3 @@
 'use strict';
 
-require( './app/server' );
+require( './app/boot' );
