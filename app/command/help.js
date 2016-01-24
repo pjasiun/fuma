@@ -1,5 +1,7 @@
 'use strict';
 
+const Table = require( 'cli-table' );
+
 class Result {
 	constructor( context ) {
 		this.context = context;
@@ -10,10 +12,21 @@ class Result {
 			return;
 		}
 
+		const table = new Table();
+
+		table.push(
+			[ 'help', 'help page' ],
+			[ '@scofalik @paula 0 : 10 @pjasiun @onion', 'enter match result' ]
+		);
+
+		for ( let i = 0; i < table.length; i++ ) {
+			table[ i ][ 0 ] = request.command + ' ' + table[ i ][ 0 ];
+		}
+
 		return {
 			'response_type': 'ephemeral',
 			'text': 'Here is a list of available commands:\n' +
-					'```' + request.command + ' help - help page``` :P',
+					'```' + table.toString() + '```'
 		};
 	}
 }
