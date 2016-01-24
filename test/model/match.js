@@ -1,5 +1,5 @@
 const expect = require( 'chai' ).expect;
-const Match = require( '../app/match' );
+const Match = require( '../../app/model/match' );
 
 describe( 'Match', () => {
 	it( 'should be created from the regexp', () => {
