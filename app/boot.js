@@ -41,10 +41,6 @@ const server = http.createServer( function( request, response ) {
 
 		response.writeHead( 200, { 'Content-Type': 'application/json' } );
 
-		if ( !jsonResponse.response_type ) {
-			jsonResponse.response_type = 'in_channel';
-		}
-
 		response.end( JSON.stringify( jsonResponse ) );
 	} );
 } );

@@ -24,7 +24,6 @@ class Result {
 		}
 
 		return {
-			'response_type': 'ephemeral',
 			'text': 'Here is a list of available commands:\n' +
 					'```' + table.toString() + '```'
 		};

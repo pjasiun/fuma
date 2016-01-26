@@ -16,6 +16,7 @@ class Result {
 
 		return {
 			'text': 'Match result:',
+			'response_type': 'in_channel',
 			'attachments': [
 				{
 					'text':
