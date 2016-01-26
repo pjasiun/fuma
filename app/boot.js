@@ -4,6 +4,7 @@ const config  = require( '../config' );
 
 const http = require( 'http' );
 const url  = require( 'url' );
+const qs = require( 'querystring' );
 
 const Controller  = require( './controller' );
 
@@ -12,23 +13,40 @@ controller.addCommand( 'result' );
 controller.addCommand( 'help' );
 
 const server = http.createServer( function( request, response ) {
-	const query = url.parse( request.url, true ).query;
+	let requestData = '';
+	let jsonResponse;
 
-	let jsonResonse;
+	request.on( 'data', ( data ) => {
+		requestData += data;
 
-	if ( query.token != config.token ) {
-		jsonResonse = { 'text': 'Invalid token.' };
-	} else {
-		jsonResonse = controller.handleRequest( query );
-	}
+		if ( requestData.length > 1e6 ) {
+			// Prevent DoS attach.
+			request.connection.destroy();
+		}
+	} );
 
-	response.writeHead( 200, { 'Content-Type': 'application/json' } );
+	request.on( 'end', function() {
+		console.log( requestData );
+		let query = qs.parse( requestData );
 
-	if ( !jsonResonse.response_type ) {
-		jsonResonse.response_type = 'in_channel';
-	}
+		if ( config.debug ) {
+			query = url.parse( request.url, true ).query;
+		}
 
-	response.end( JSON.stringify( jsonResonse ) );
+		if ( query.token == config.token || config.debug ) {
+			jsonResponse = controller.handleRequest( query );
+		} else {
+			jsonResponse = { 'text': 'Invalid token.' };
+		}
+
+		response.writeHead( 200, { 'Content-Type': 'application/json' } );
+
+		if ( !jsonResponse.response_type ) {
+			jsonResponse.response_type = 'in_channel';
+		}
+
+		response.end( JSON.stringify( jsonResponse ) );
+	} );
 } );
 
 server.listen( config.port, function() {
