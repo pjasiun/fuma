@@ -22,13 +22,7 @@ class Result {
 			'response_type': 'in_channel',
 			'attachments': [
 				{
-					'text':
-						'red1 = ' + match.red1 + '; ' +
-						'red2 = ' + match.red2 + '; ' +
-						'redScore = ' + match.redScore + '; ' +
-						'blueScore = ' + match.blueScore + '; ' +
-						'blue1 = ' + match.blue1 + '; ' +
-						'blue2 = ' + match.blue2 + ';'
+					'text': match.toString()
 				}
 			]
 		};
