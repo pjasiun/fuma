@@ -17,7 +17,9 @@ class Result {
 		}
 
 		if ( !history.length ) {
-			return { 'text:': 'History is empty.' };
+			return {
+				'text': 'History is empty.'
+			};
 		}
 
 		let historyEntries = [];
@@ -42,7 +44,6 @@ class Result {
 
 		return {
 			'text': '```' + table.toString() + '```'
-
 		};
 	}
 }
