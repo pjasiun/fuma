@@ -10,6 +10,7 @@ const Controller  = require( './controller' );
 
 const controller = new Controller();
 controller.addCommand( 'result' );
+controller.addCommand( 'history' );
 controller.addCommand( 'help' );
 
 const server = http.createServer( function( request, response ) {
@@ -26,7 +27,6 @@ const server = http.createServer( function( request, response ) {
 	} );
 
 	request.on( 'end', function() {
-		console.log( requestData );
 		let query = qs.parse( requestData );
 
 		if ( config.debug ) {

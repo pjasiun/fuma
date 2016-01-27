@@ -1,6 +1,7 @@
 'use strict';
 
 const Match = require( '../model/match' );
+const history = require( '../model/history' );
 
 class Result {
 	constructor( context ) {
@@ -14,8 +15,10 @@ class Result {
 			return;
 		}
 
+		history.add( match );
+
 		return {
-			'text': 'Match result:',
+			'text': 'Match added to the history!',
 			'response_type': 'in_channel',
 			'attachments': [
 				{

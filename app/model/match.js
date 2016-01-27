@@ -26,6 +26,11 @@ class Match {
 			values[ 5 ],
 			values[ 6 ] );
 	}
+
+	toString() {
+		return '@' + this.red1 + ' @' + this.red2 + ' ' + this.redScore + ' : ' +
+			this.blueScore + ' @' + this.blue1 + ' @' + this.blue2;
+	}
 }
 
 module.exports = Match;

@@ -16,7 +16,8 @@ class Result {
 
 		table.push(
 			[ 'help', 'help page' ],
-			[ '@scofalik @paula 0 : 10 @pjasiun @onion', 'enter match result' ]
+			[ '@scofalik @paula 0 : 10 @pjasiun @onion', 'enter match result' ],
+			[ 'history', 'matches history' ]
 		);
 
 		for ( let i = 0; i < table.length; i++ ) {
