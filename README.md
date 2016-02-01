@@ -8,4 +8,14 @@ Fuma helps you implement [Elo rating system](https://en.wikipedia.org/wiki/Elo_r
 
 ## Commands
 
+**/fb help** help page
 
+**/fb @a @b 10 : 7 @c @d** enter match result
+
+**/fb history** matches history
+
+**/fb update @a @b 10 : 7 @c @d -> @a @b 10 : 8 @c @d** updates last found match result
+
+**/fb remove @a @b 10 : 7 @c @d** removes last found match result
+
+**/fb public history** print the history on the channel, may be used with every command
