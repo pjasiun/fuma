@@ -15,6 +15,29 @@ class History {
 		this.save();
 	}
 
+	find( match ) {
+		const matchString = match.toString();
+		const data = this.data;
+
+		for ( let i = data.length - 1; i >= 0; i-- ) {
+			if ( data[ i ][ 1 ] == matchString ) {
+				return i;
+			}
+		}
+
+		return null;
+	}
+
+	update( i, match ) {
+		this.data[ i ][ 1 ] = match.toString();
+		this.save();
+	}
+
+	remove( i ) {
+		this.data.splice( i, 1 );
+		this.save();
+	}
+
 	get length() {
 		return this.data.length;
 	}

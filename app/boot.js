@@ -12,6 +12,8 @@ const controller = new Controller();
 controller.addCommand( 'result' );
 controller.addCommand( 'history' );
 controller.addCommand( 'help' );
+controller.addCommand( 'remove' );
+controller.addCommand( 'update' );
 
 const server = http.createServer( function( request, response ) {
 	let requestData = '';

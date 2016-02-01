@@ -16,8 +16,11 @@ class Result {
 
 		table.push(
 			[ 'help', 'help page' ],
-			[ '@scofalik @paula 0 : 10 @pjasiun @onion', 'enter match result' ],
-			[ 'history', 'matches history' ]
+			[ '@a @b 10 : 7 @c @d', 'enter match result' ],
+			[ 'history', 'matches history' ],
+			[ 'update @a @b 10 : 7 @c @d -> @a @b 10 : 8 @c @d', 'updates last found match result' ],
+			[ 'remove @a @b 10 : 7 @c @d', 'removes last found match result' ],
+			[ 'public history', 'print the history on the channel,\nmay be used with every command' ]
 		);
 
 		for ( let i = 0; i < table.length; i++ ) {
