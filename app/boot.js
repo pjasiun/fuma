@@ -23,7 +23,7 @@ const server = http.createServer( function( request, response ) {
 		requestData += data;
 
 		if ( requestData.length > 1e6 ) {
-			// Prevent DoS attach.
+			// Prevent DoS attack.
 			request.connection.destroy();
 		}
 	} );
