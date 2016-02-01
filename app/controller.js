@@ -1,6 +1,6 @@
 'use strict';
 
-const matchPublic = /^\s*public\s*(\S*)$/;
+const matchPublic = /^\s*public\s*(.*)$/;
 
 class Controller {
 	constructor() {
