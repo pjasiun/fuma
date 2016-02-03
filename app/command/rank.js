@@ -22,13 +22,23 @@ class Rank {
 		}
 
 		const table = new Table( { style : { compact : true } } );
+
 		table.push( [ '', 'Player:', 'Score:', 'Matches:' ], [] );
 
 		let pos = 1;
+		let previousPosScore;
 
 		for ( let player of players ) {
-			table.push( [ pos, player.name, player.score, player.matches ] );
+			let posLabel = pos + '.';
+
+			if ( previousPosScore == player.score ) {
+				posLabel = '';
+			}
+
+			table.push( [ posLabel, player.name, player.score, player.matches ] );
+
 			pos++;
+			previousPosScore = player.score;
 		}
 
 		console.log( table.toString() );
