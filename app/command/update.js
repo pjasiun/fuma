@@ -4,6 +4,7 @@ const updateText = /^\s*update\s*(.*)\s*->\s*(.*)\s*$/;
 
 const Match = require( '../model/match' );
 const history = require( '../model/history' );
+const rank = require( '../model/rank' );
 
 class Update {
 	constructor( context ) {
@@ -33,6 +34,7 @@ class Update {
 		}
 
 		history.update( i, newMatch );
+		rank.reload();
 
 		return {
 			'text': 'Match updated form ' + oldMatch.toString() + ' to ' + newMatch.toString() + '!',

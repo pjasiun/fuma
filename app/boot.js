@@ -14,6 +14,7 @@ controller.addCommand( 'history' );
 controller.addCommand( 'help' );
 controller.addCommand( 'remove' );
 controller.addCommand( 'update' );
+controller.addCommand( 'rank' );
 
 const server = http.createServer( function( request, response ) {
 	let requestData = '';
