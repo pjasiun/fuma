@@ -17,6 +17,7 @@ class Result {
 		table.push(
 			[ 'help', 'help page' ],
 			[ '@a @b 10 : 7 @c @d', 'enter match result' ],
+			[ 'rank', 'foosball ranking' ],
 			[ 'history', 'matches history' ],
 			[ 'update @a @b 10 : 7 @c @d -> @a @b 10 : 8 @c @d', 'updates last found match result' ],
 			[ 'remove @a @b 10 : 7 @c @d', 'removes last found match result' ],
