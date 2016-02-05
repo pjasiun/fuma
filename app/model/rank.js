@@ -73,6 +73,32 @@ class Rank {
 		return ret;
 	}
 
+	getExpected( red1, red2, blue1, blue2 ) {
+		const red1Score = this.getPlayer( red1 ).score;
+		const red2Score = this.getPlayer( red2 ).score;
+		const blue1Score = this.getPlayer( blue1 ).score;
+		const blue2Score = this.getPlayer( blue2 ).score;
+
+		const teamRedAverage = ( red1Score + red2Score ) / 2;
+		const teamBlueAverage = ( blue1Score + blue2Score ) / 2;
+
+		let expectedScoreRed = elo.getExpected( teamRedAverage, teamBlueAverage );
+		let expectedScoreBlue = elo.getExpected( teamBlueAverage, teamRedAverage );
+
+		let expected = { red: 10, blue: 10 };
+
+		if ( expectedScoreRed > expectedScoreBlue ) {
+			expected.blue = ( expectedScoreBlue / expectedScoreRed ) * 10;
+		} else if ( expectedScoreRed < expectedScoreBlue ) {
+			expected.red = ( expectedScoreRed / expectedScoreBlue ) * 10;
+		}
+
+		expected.blue = Math.round( expected.blue * 100 ) / 100;
+		expected.red = Math.round( expected.red * 100 ) / 100;
+
+		return expected;
+	}
+
 	getPlayers() {
 		let players = Array.from( this.players.values() );
 
