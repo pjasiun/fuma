@@ -19,6 +19,8 @@ class Result {
 			[ '@a @b 10 : 7 @c @d', 'enter match result' ],
 			[ 'rank', 'foosball ranking' ],
 			[ 'history', 'matches history' ],
+			[ 'history @a', 'matches @a\'s history' ],
+			[ 'history @a : @b', 'matches history of @a vs @b matches' ],
 			[ 'expected @a @b : @c @d', 'show the expected match result' ],
 			[ 'update @a @b 10 : 7 @c @d -> @a @b 10 : 8 @c @d', 'updates last found match result' ],
 			[ 'remove @a @b 10 : 7 @c @d', 'removes last found match result' ],

@@ -1,10 +1,11 @@
 'use strict';
 
+const historyText = /^\s*history\s*(@\S*\s*)?(:\s*(@\S*\s*))?\s*$/;
 const Table = require( 'cli-table' );
 const history = require( '../model/history' );
+const match = require( '../model/match' );
 
 const _ = require( 'lodash' );
-
 
 class Result {
 	constructor( context ) {
@@ -12,8 +13,25 @@ class Result {
 	}
 
 	handleRequest( request ) {
-		if ( request.text != 'history' ) {
+		const values = historyText.exec( request.text );
+
+		if ( !values ) {
 			return;
+		}
+
+		const isPlayerA = !!values[ 1 ];
+		const isPlayerB = !!values[ 3 ];
+		let playerA;
+		let playerAName;
+		let playerB;
+
+		if ( isPlayerA ) {
+			playerA = values[ 1 ].trim();
+			playerAName = playerA.substr( 1 );
+		}
+
+		if ( isPlayerB ) {
+			playerB = values[ 3 ].trim();
 		}
 
 		if ( !history.length ) {
@@ -23,12 +41,47 @@ class Result {
 		}
 
 		let historyEntries = [];
+		let playerAWins = 0;
 
 		for ( let i = 0; i < history.length; i++ ) {
-			historyEntries.push( history.getEntry( i ) );
+			var entry = history.getEntry( i );
+
+			// Filter out player A games.
+			if ( isPlayerA && entry.match.search( playerA ) < 0 ) {
+				continue;
+			}
+
+			// Filter out player B games.
+			if ( isPlayerB && entry.match.search( playerB ) < 0 ) {
+				continue;
+			}
+
+			let teams = entry.match.split( ':' );
+
+			// If both players are defined search versus games
+			if ( isPlayerA && isPlayerB && teams[ 0 ].search( playerA ) > 0 ^ teams[ 0 ].search( playerB ) > 0 ) {
+				continue;
+			}
+
+			// Count playerA wins
+			if ( isPlayerA ) {
+				let matchResult = match.createFromText( entry.match );
+
+				if ( matchResult.red1 === playerAName || matchResult.red2 === playerAName ) {
+					playerAWins++;
+				}
+			}
+
+			historyEntries.push( entry );
 		}
 
-		const table = new Table( { style : { compact : true } } );
+		if ( !historyEntries.length && isPlayerA ) {
+			return {
+				'text': playerA + ' didn\'t played' + ( isPlayerB ? ' against ' + playerB : ' any game' )
+			};
+		}
+
+		const table = new Table( { style: { compact: true } } );
 
 		const days = _.groupBy( historyEntries, 'day' );
 
@@ -42,8 +95,25 @@ class Result {
 
 		console.log( table.toString() );
 
+		var outText = '```' + table.toString() + '```';
+
+		// Show short summary of games that player A & B played
+		if ( isPlayerA ) {
+			var summary = '\n ' + playerA + ' won ' + playerAWins + ' out of ' + historyEntries.length + ' games';
+
+			if ( isPlayerB ) {
+				summary += ' against ' + playerB;
+				var halfOfMatches = historyEntries.length / 2;
+
+				summary += '.\n ' + ( playerAWins === halfOfMatches ? 'None' : ( playerAWins > halfOfMatches ? playerA : playerB ) ) + ' is better ¯\\_(ツ)_/¯'
+			}
+
+			console.log( summary );
+			outText += summary;
+		}
+
 		return {
-			'text': '```' + table.toString() + '```'
+			'text': outText
 		};
 	}
 }
