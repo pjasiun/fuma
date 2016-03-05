@@ -1,9 +1,9 @@
 'use strict';
 
-const historyText = /^\s*history\s*(@\S*\s*)?(:\s*(@\S*\s*))?\s*$/;
+const historyText = /^\s*history\s*((@\S*\s*)?(@\S*\s*)?(:\s*(@\S*\s*)(@\S*\s*)?)?)?\s*$/;
 const Table = require( 'cli-table' );
 const history = require( '../model/history' );
-const match = require( '../model/match' );
+const Match = require( '../model/match' );
 
 const _ = require( 'lodash' );
 
@@ -19,66 +19,69 @@ class Result {
 			return;
 		}
 
-		const isPlayerA = !!values[ 1 ];
-		const isPlayerB = !!values[ 3 ];
-		let playerA;
-		let playerAName;
-		let playerB;
-
-		if ( isPlayerA ) {
-			playerA = values[ 1 ].trim();
-			playerAName = playerA.substr( 1 );
-		}
-
-		if ( isPlayerB ) {
-			playerB = values[ 3 ].trim();
-		}
-
 		if ( !history.length ) {
 			return {
 				'text': 'History is empty.'
 			};
 		}
 
-		let historyEntries = [];
-		let playerAWins = 0;
+		const hasMatchFilters = !!values[ 1 ];
+		const teamA1 = !!values[ 2 ] ? values[ 2 ].trim() : false;
+		const teamA2 = !!values[ 3 ] ? values[ 3 ].trim() : false;
+		const isVersus = !!values [ 4 ];
+		const teamB1 = !!values[ 5 ] ? values[ 5 ].trim() : false;
+		const teamB2 = !!values[ 6 ] ? values[ 6 ].trim() : false;
 
-		for ( let i = 0; i < history.length; i++ ) {
-			var entry = history.getEntry( i );
+		let teamAWins = 0;
+		let teamBWins = 0;
 
-			// Filter out player A games.
-			if ( isPlayerA && entry.match.search( playerA ) < 0 ) {
-				continue;
+		let historyEntries;
+
+		if ( !hasMatchFilters ) {
+			// No optional string after history so just copy whole history
+			historyEntries = [];
+
+			for ( let i = 0; i < history.length; i++ ) {
+				historyEntries.push( history.getEntry( i ) );
 			}
-
-			// Filter out player B games.
-			if ( isPlayerB && entry.match.search( playerB ) < 0 ) {
-				continue;
-			}
-
-			let teams = entry.match.split( ':' );
-
-			// If both players are defined search versus games
-			if ( isPlayerA && isPlayerB && teams[ 0 ].search( playerA ) > 0 ^ teams[ 0 ].search( playerB ) > 0 ) {
-				continue;
-			}
-
-			// Count playerA wins
-			if ( isPlayerA ) {
-				let matchResult = match.createFromText( entry.match );
-
-				if ( matchResult.red1 === playerAName || matchResult.red2 === playerAName ) {
-					playerAWins++;
+		} else {
+			// Filter different player games. Sorry for large if-else...
+			if ( !isVersus ) {
+				if ( teamA2 ) {
+					historyEntries = history.filterTeam( teamA1, teamA2 );
+				} else {
+					historyEntries = history.filterPlayer( teamA1 );
+				}
+			} else {
+				// It is a versus game
+				if ( teamB2 ) {
+					// It has full second team defined
+					if ( teamA2 ) {
+						historyEntries = history.filterTeamVsTeam( teamA1, teamA2, teamB1, teamB2 );
+					} else {
+						historyEntries = history.filterTeamVsPlayer( teamB1, teamB2, teamA1 );
+					}
+				} else {
+					// Only one player in second team
+					if ( teamA2 ) {
+						historyEntries = history.filterTeamVsPlayer( teamA1, teamA2, teamB1 );
+					} else {
+						historyEntries = history.filterPlayerVsPlayer( teamA1, teamB1 );
+					}
 				}
 			}
 
-			historyEntries.push( entry );
-		}
+			// count stats
+			historyEntries.forEach( function( entry ) {
+				let match = Match.createFromText( entry.match );
 
-		if ( !historyEntries.length && isPlayerA ) {
-			return {
-				'text': playerA + ' didn\'t played' + ( isPlayerB ? ' against ' + playerB : ' any game' )
-			};
+				// The winning team is always red
+				if ( match.red1 === teamA1.substr( 1 ) || match.red2 === teamA2.substr( 1 ) ) {
+					teamAWins += 1;
+				} else {
+					teamBWins += 1;
+				}
+			} );
 		}
 
 		const table = new Table( { style: { compact: true } } );
@@ -95,17 +98,30 @@ class Result {
 
 		console.log( table.toString() );
 
-		var outText = '```' + table.toString() + '```';
+		let outText = '```' + table.toString() + '```';
 
-		// Show short summary of games that player A & B played
-		if ( isPlayerA ) {
-			var summary = '\n ' + playerA + ' won ' + playerAWins + ' out of ' + historyEntries.length + ' games';
+		// Show short summary of games
+		if ( hasMatchFilters ) {
+			const teamAName = teamA1 + ( teamA2 ? ' and ' + teamA2 : '' );
+			const teamBName = teamB1 + ( teamB2 ? ' and ' + teamB2 : '' );
 
-			if ( isPlayerB ) {
-				summary += ' against ' + playerB;
-				var halfOfMatches = historyEntries.length / 2;
+			if ( !historyEntries.length ) {
+				return {
+					'text': teamAName + ' didn\'t played' + ( isVersus ? ' against ' + teamBName : ' any game' )
+				};
+			}
 
-				summary += '.\n ' + ( playerAWins === halfOfMatches ? 'None' : ( playerAWins > halfOfMatches ? playerA : playerB ) ) + ' is better ¯\\_(ツ)_/¯'
+			let summary =
+				'\n ' + teamAName + ' won ' + teamAWins + ' out of ' + historyEntries.length + ' games';
+
+			if ( isVersus ) {
+				summary += ' against ' + teamBName;
+
+				let halfOfMatches = historyEntries.length / 2;
+
+				summary += '.\n ' +
+					( teamAWins === halfOfMatches ? 'None' : ( teamAWins > halfOfMatches ? teamAName : teamBName ) ) +
+					' rules ¯\\_(ツ)_/¯'
 			}
 
 			console.log( summary );

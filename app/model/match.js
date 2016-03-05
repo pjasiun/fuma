@@ -41,6 +41,34 @@ class Match {
 		return '@' + this.red1 + ' @' + this.red2 + ' ' + this.redScore + ' : ' +
 			this.blueScore + ' @' + this.blue1 + ' @' + this.blue2;
 	}
+
+	hasPlayer( playerHandle ) {
+		let playerName = playerHandle.replace( '@', '' );
+
+		return this.red1 === playerName || this.red2 === playerName || this.blue1 === playerName || this.blue2 === playerName;
+	}
+
+	hasTeam( playerA, playerB ) {
+		return this.hasRedTeam( playerA, playerB ) || this.hasBlueTeam( playerA, playerB )
+	}
+
+	isVersus( playerA, playerB ) {
+		return this.hasPlayer( playerA ) && this.hasPlayer( playerB ) && !this.hasTeam( playerA, playerB );
+	}
+
+	hasRedTeam( playerA, playerB ) {
+		let playerAName = playerA.replace( '@', '' );
+		let playerBName = playerB.replace( '@', '' );
+
+		return ( this.red1 === playerAName && this.red2 === playerBName ) || ( this.red1 === playerBName && this.red2 === playerAName );
+	}
+
+	hasBlueTeam( playerA, playerB ) {
+		let playerAName = playerA.replace( '@', '' );
+		let playerBName = playerB.replace( '@', '' );
+
+		return ( this.blue1 === playerAName && this.blue2 === playerBName ) || ( this.blue1 === playerBName && this.blue2 === playerAName );
+	}
 }
 
 module.exports = Match;
