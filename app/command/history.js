@@ -76,7 +76,7 @@ class Result {
 				let match = Match.createFromText( entry.match );
 
 				// The winning team is always red
-				if ( match.red1 === teamA1.substr( 1 ) || match.red2 === teamA2.substr( 1 ) ) {
+				if ( match.red1 === teamA1.substr( 1 ) || match.red2 === teamA1.substr( 1 ) ) {
 					teamAWins += 1;
 				} else {
 					teamBWins += 1;
