@@ -1,6 +1,7 @@
 'use strict';
 
 const moment = require( 'moment' );
+const Match = require( './match' );
 
 class History {
 	constructor( storage ) {
@@ -60,6 +61,86 @@ class History {
 			time: time,
 			match: match
 		};
+	}
+
+	filterPlayer( player ) {
+		let output = [];
+
+		for ( let i = 0; i < this.length; i++ ) {
+			let entry = this.getEntry( i );
+
+			let match = Match.createFromText( entry.match );
+
+			if ( match.hasPlayer( player ) ) {
+				output.push( entry );
+			}
+		}
+
+		return output;
+	}
+
+	filterPlayerVsPlayer( playerA, playerB ) {
+		let output = [];
+
+		for ( let i = 0; i < this.length; i++ ) {
+			let entry = this.getEntry( i );
+
+			let match = Match.createFromText( entry.match );
+
+			if ( match.isVersus( playerA, playerB ) ) {
+				output.push( entry );
+			}
+		}
+
+		return output;
+	}
+
+	filterTeam( playerA, playerB ) {
+		let output = [];
+
+		for ( let i = 0; i < this.length; i++ ) {
+			let entry = this.getEntry( i );
+
+			let match = Match.createFromText( entry.match );
+
+			if ( match.hasTeam( playerA, playerB ) ) {
+				output.push( entry );
+			}
+		}
+
+		return output;
+	}
+
+	filterTeamVsTeam( playerA, playerB, playerC, playerD ) {
+		let output = [];
+
+		for ( let i = 0; i < this.length; i++ ) {
+			let entry = this.getEntry( i );
+
+			let match = Match.createFromText( entry.match );
+
+			if ( match.hasTeam( playerA, playerB ) && match.hasTeam( playerC, playerD ) ) {
+				output.push( entry );
+			}
+		}
+
+		return output;
+	}
+
+	filterTeamVsPlayer( playerA, playerB, playerC ) {
+		let output = [];
+
+		for ( let i = 0; i < this.length; i++ ) {
+			let entry = this.getEntry( i );
+
+			let match = Match.createFromText( entry.match );
+
+			if ( match.hasTeam( playerA, playerB ) && match.isVersus( playerA, playerC ) ) {
+				output.push( entry );
+			}
+		}
+
+		return output;
 	}
 }
 

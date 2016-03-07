@@ -14,7 +14,7 @@ const fs = require( 'fs' );
 
 	value.save = () => {
 		fs.writeFile( __dirname + '/' + fileName, JSON.stringify( value ), 'utf8' );
-	}
+	};
 
 	return value;
 }
