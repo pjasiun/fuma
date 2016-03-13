@@ -16,6 +16,7 @@ controller.addCommand( 'remove' );
 controller.addCommand( 'update' );
 controller.addCommand( 'rank' );
 controller.addCommand( 'expected' );
+controller.addCommand( 'registration' );
 
 const server = http.createServer( function( request, response ) {
 	let requestData = '';
