@@ -24,7 +24,10 @@ class Result {
 			[ 'expected @a @b : @c @d', 'show the expected match result' ],
 			[ 'update @a @b 10 : 7 @c @d -> @a @b 10 : 8 @c @d', 'updates last found match result' ],
 			[ 'remove @a @b 10 : 7 @c @d', 'removes last found match result' ],
-			[ 'public history', 'print the history on the channel,\nmay be used with every command' ]
+			[ 'public history', 'print the history on the channel,\nmay be used with every command' ],
+			[ 'set alias A @aaaa', 'set alias, note that alias name\nhave to be all upper case' ],
+			[ 'delete alias A', 'delete alias' ],
+			[ 'aliases', 'list aliases' ]
 		);
 
 		for ( let i = 0; i < table.length; i++ ) {

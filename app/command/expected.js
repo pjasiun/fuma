@@ -12,8 +12,7 @@ class Expected {
 	}
 
 	handleRequest( request ) {
-		const values = commandRegExp.exec( request.text );
-
+		const values = commandRegExp.exec( request.resolvedText );
 
 		if ( !values ) {
 			return null;

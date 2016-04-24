@@ -13,7 +13,7 @@ class Result {
 	}
 
 	handleRequest( request ) {
-		const values = historyText.exec( request.text );
+		const values = historyText.exec( request.resolvedText );
 
 		if ( !values ) {
 			return;

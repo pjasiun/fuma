@@ -17,6 +17,9 @@ controller.addCommand( 'update' );
 controller.addCommand( 'rank' );
 controller.addCommand( 'expected' );
 controller.addCommand( 'registration' );
+controller.addCommand( 'set-alias' );
+controller.addCommand( 'delete-alias' );
+controller.addCommand( 'aliases' );
 
 const server = http.createServer( function( request, response ) {
 	let requestData = '';

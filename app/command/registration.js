@@ -13,7 +13,7 @@ class Registration {
 
 	handleRequest( request ) {
 		const registered = this.registered;
-		const registrationValues = registrationRegExp.exec( request.text );
+		const registrationValues = registrationRegExp.exec( request.resolvedText );
 
 		if ( !registrationValues ) {
 			return null;

@@ -12,7 +12,7 @@ class Remove {
 	}
 
 	handleRequest( request ) {
-		const values = updateText.exec( request.text );
+		const values = updateText.exec( request.resolvedText );
 
 		if ( !values ) {
 			return;

@@ -10,7 +10,7 @@ class Result {
 	}
 
 	handleRequest( request ) {
-		const match = Match.createFromText( request.text );
+		const match = Match.createFromText( request.resolvedText );
 
 		if ( !match ) {
 			return;
