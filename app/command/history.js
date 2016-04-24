@@ -41,8 +41,15 @@ class Result {
 			// No optional string after history so just copy whole history
 			historyEntries = [];
 
+			// But show only results from last day to avoid breaking response limit.
+			const lastDay = history.getEntry( history.length - 1 ).day;
+
 			for ( let i = 0; i < history.length; i++ ) {
-				historyEntries.push( history.getEntry( i ) );
+				const entry = history.getEntry( i );
+
+				if ( entry.day == lastDay ) {
+					historyEntries.push( entry );
+				}
 			}
 		} else {
 			// Filter different player games. Sorry for large if-else...
