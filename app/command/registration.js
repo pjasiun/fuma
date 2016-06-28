@@ -46,19 +46,23 @@ class Registration {
 		};
 
 		function add( user ) {
-			registered.push( user );
+			// Add the player only if he/she is not registered already.
+			// We could return if user in in registered pool already but it could be abused to check if someone else is already registered.
+			if ( registered.indexOf( user ) === -1 ) {
+				registered.push( user );
+			}
 
 			const playersCount = registered.length % 4;
 
 			if ( playersCount ) {
-				asyncReponse( 'A new player joined the next match! ' +
+				asyncResponse( 'A new player joined the next match! ' +
 					'Waiting for the next *' + ( 4 - playersCount ) + '*!' );
 			} else {
 				const players = registered.splice( -4 );
 				players.sort( ( playerA, playerB ) => rank.getPlayer( playerA ).score - rank.getPlayer( playerB ).score );
 				const expected = rank.getExpected( players[ 0 ], players[ 3 ], players[ 1 ], players[ 2 ] );
 
-				asyncReponse( ':fire: @' + players[ 0 ] + ' @' + players[ 3 ] +
+				asyncResponse( ':fire: @' + players[ 0 ] + ' @' + players[ 3 ] +
 					' (' + expected.red + ' : ' + expected.blue + ')' +
 					' @' + players[ 1 ] + ' @' + players[ 2 ] );
 			}
@@ -76,12 +80,12 @@ class Registration {
 
 				let players = registered.length % 4;
 
-				asyncReponse( 'User removed from the match. :chicken: ' +
+				asyncResponse( 'User removed from the match. :chicken: ' +
 					'Now we need ' + ( 4 - players ) + ' players. ' );
 			}
 		}
 
-		function asyncReponse( text ) {
+		function asyncResponse( text ) {
 			sendRequest( {
 				uri: request.response_url,
 				method: 'POST',
