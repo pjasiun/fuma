@@ -46,7 +46,11 @@ class Controller {
 	}
 }
 
-function asyncResponse( uri, text, type = 'in_channel' ) {
+function asyncResponse( uri, text, type ) {
+	if ( !type ) {
+		type = 'in_channel'
+	}
+
 	sendRequest( {
 		uri: uri,
 		method: 'POST',
