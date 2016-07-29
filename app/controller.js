@@ -1,5 +1,7 @@
 'use strict';
 
+const sendRequest = require( 'request' );
+
 const matchPublic = /^\s*public\s*(.*)$/;
 
 const aliases = require( './model/aliases' );
@@ -10,7 +12,7 @@ class Controller {
 	}
 
 	addCommand( name ) {
-		const Command  = require( './command/' + name );
+		const Command = require( './command/' + name );
 		const instance = new Command( this );
 		this.commands.push( instance );
 	}
@@ -26,7 +28,7 @@ class Controller {
 		}
 
 		for ( let command of this.commands ) {
-			const response = command.handleRequest( request );
+			const response = command.handleRequest( request, asyncResponse );
 
 			if ( response ) {
 				if ( isPublic ) {
@@ -42,6 +44,17 @@ class Controller {
 					'Use `' + request.command + ' help` for help.'
 		};
 	}
+}
+
+function asyncResponse( uri, text, type = 'in_channel' ) {
+	sendRequest( {
+		uri: uri,
+		method: 'POST',
+		json: {
+			'response_type': type,
+			'text': text
+		}
+	} );
 }
 
 module.exports = Controller;
