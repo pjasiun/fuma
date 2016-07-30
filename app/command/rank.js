@@ -2,6 +2,8 @@
 
 const Table = require( 'cli-table' );
 
+const minMatches = 20;
+
 class Rank {
 	constructor( context ) {
 		this.context = context;
@@ -20,23 +22,29 @@ class Rank {
 			};
 		}
 
-		const table = new Table( { style : { compact : true } } );
+		const table = new Table( { style: { compact: true } } );
 
 		table.push( [ '', 'Player:', 'Score:', 'Matches:' ], [] );
 
-		let pos = 1;
+		let rankingPosition = 1;
 		let previousPosScore;
 
 		for ( let player of players ) {
-			let posLabel = pos + '.';
+			let posLabel = rankingPosition + '.';
+
+			if ( rankingPosition === 1 ) {
+				posLabel + ' 👑';
+			}
 
 			if ( previousPosScore == player.score ) {
 				posLabel = '';
 			}
 
-			table.push( [ posLabel, player.name, player.score, player.matches ] );
+			if ( player.matches >= minMatches ) {
+				table.push( [ posLabel, player.name, player.score, player.matches ] );
+			}
 
-			pos++;
+			rankingPosition++;
 			previousPosScore = player.score;
 		}
 
