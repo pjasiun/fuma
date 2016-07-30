@@ -1,14 +1,27 @@
 'use strict';
 
-const config  = require( '../config' );
+const config = require( '../config' );
 
 const http = require( 'http' );
-const url  = require( 'url' );
+const url = require( 'url' );
 const qs = require( 'querystring' );
 
-const Controller  = require( './controller' );
+const Controller = require( './controller' );
+const History = require( './model/history' );
+const Aliases = require( './model/aliases' );
+const Rank = require( './model/rank' );
 
-const controller = new Controller();
+const StorageRepository = require( './storage' );
+const storageRepository = new StorageRepository( '../data/' );
+
+const history = new History( storageRepository.createStorage( 'history', [] ) );
+const aliases = new Aliases( storageRepository.createStorage( 'aliases', {} ) );
+
+const rank = new Rank( history );
+rank.reload();
+
+const controller = new Controller( storageRepository, { history: history, aliases: aliases, rank: rank } );
+
 controller.addCommand( 'result' );
 controller.addCommand( 'history' );
 controller.addCommand( 'help' );

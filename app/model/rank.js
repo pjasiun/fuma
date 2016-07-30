@@ -1,12 +1,12 @@
 'use strict';
 
 const elo = require( 'elo-rank' )( 40 );
-const history = require( './history' );
 const Match = require( './match' );
 
 class Rank {
-	constructor() {
+	constructor( history ) {
 		this.players = new Map();
+		this.history = history;
 	}
 
 	getPlayer( name ) {
@@ -108,13 +108,10 @@ class Rank {
 	reload() {
 		this.players.clear();
 
-		for ( let i = 0; i < history.length; i++ ) {
-			this.addMatch( Match.createFromText( history.getEntry( i ).match ) );
+		for ( let i = 0; i < this.history.length; i++ ) {
+			this.addMatch( Match.createFromText( this.history.getEntry( i ).match ) );
 		}
 	}
 }
 
-const rank = new Rank();
-rank.reload();
-
-module.exports = rank;
+module.exports = Rank;

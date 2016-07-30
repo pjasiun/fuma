@@ -2,8 +2,6 @@
 
 const commandRegExp = /^set alias\s+([A-Z]*)\s+(.*)$/;
 
-const aliases = require( '../model/aliases' );
-
 class SetAlias {
 	constructor( context ) {
 		this.context = context;
@@ -19,7 +17,7 @@ class SetAlias {
 		const alias = values[ 1 ];
 		const value = values[ 2 ];
 
-		aliases.set( alias, value );
+		this.context.aliases.set( alias, value );
 
 		return {
 			'text': 'Alias \"' + alias + '\" added.',

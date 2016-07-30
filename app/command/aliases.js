@@ -1,7 +1,6 @@
 'use strict';
 
 const Table = require( 'cli-table' );
-const aliases = require( '../model/aliases' );
 
 class Aliases {
 	constructor( context ) {
@@ -17,9 +16,9 @@ class Aliases {
 
 		table.push( [ 'Alias:', 'Value:' ], [] );
 
-		for ( let alias of aliases ) {
+		for ( let alias of this.context.aliases ) {
 			console.log( alias );
-			table.push( [ alias, aliases.getValue( alias ) ] );
+			table.push( [ alias, this.context.aliases.getValue( alias ) ] );
 		}
 
 		return {

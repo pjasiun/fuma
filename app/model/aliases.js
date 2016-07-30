@@ -35,6 +35,4 @@ class Aliases {
 	}
 }
 
-const aliasesData = require( '../storage' )( 'aliases', { data: {} } );
-
-module.exports = new Aliases( aliasesData );
+module.exports = Aliases;

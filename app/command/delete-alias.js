@@ -2,8 +2,6 @@
 
 const commandRegExp = /^delete alias\s+([A-Z]*)$/;
 
-const aliases = require( '../model/aliases' );
-
 class DeleteAlias {
 	constructor( context ) {
 		this.context = context;
@@ -18,7 +16,7 @@ class DeleteAlias {
 
 		const alias = values[ 1 ];
 
-		aliases.delete( alias );
+		this.context.aliases.delete( alias );
 
 		return {
 			'text': 'Alias \"' + alias + '\" deleted.',

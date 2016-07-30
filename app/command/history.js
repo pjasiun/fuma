@@ -2,7 +2,6 @@
 
 const historyText = /^\s*history\s*((@\S*\s*)?(@\S*\s*)?(:\s*(@\S*\s*)(@\S*\s*)?)?)?\s*$/;
 const Table = require( 'cli-table' );
-const history = require( '../model/history' );
 const Match = require( '../model/match' );
 
 const _ = require( 'lodash' );
@@ -19,7 +18,7 @@ class Result {
 			return;
 		}
 
-		if ( !history.length ) {
+		if ( !this.context.history.length ) {
 			return {
 				'text': 'History is empty.'
 			};
@@ -42,10 +41,10 @@ class Result {
 			historyEntries = [];
 
 			// But show only results from last day to avoid breaking response limit.
-			const lastDay = history.getEntry( history.length - 1 ).day;
+			const lastDay = this.context.history.getEntry( this.context.history.length - 1 ).day;
 
-			for ( let i = 0; i < history.length; i++ ) {
-				const entry = history.getEntry( i );
+			for ( let i = 0; i < this.context.history.length; i++ ) {
+				const entry = this.context.history.getEntry( i );
 
 				if ( entry.day == lastDay ) {
 					historyEntries.push( entry );
@@ -55,25 +54,25 @@ class Result {
 			// Filter different player games. Sorry for large if-else...
 			if ( !isVersus ) {
 				if ( teamA2 ) {
-					historyEntries = history.filterTeam( teamA1, teamA2 );
+					historyEntries = this.context.history.filterTeam( teamA1, teamA2 );
 				} else {
-					historyEntries = history.filterPlayer( teamA1 );
+					historyEntries = this.context.history.filterPlayer( teamA1 );
 				}
 			} else {
 				// It is a versus game
 				if ( teamB2 ) {
 					// It has full second team defined
 					if ( teamA2 ) {
-						historyEntries = history.filterTeamVsTeam( teamA1, teamA2, teamB1, teamB2 );
+						historyEntries = this.context.history.filterTeamVsTeam( teamA1, teamA2, teamB1, teamB2 );
 					} else {
-						historyEntries = history.filterTeamVsPlayer( teamB1, teamB2, teamA1 );
+						historyEntries = this.context.history.filterTeamVsPlayer( teamB1, teamB2, teamA1 );
 					}
 				} else {
 					// Only one player in second team
 					if ( teamA2 ) {
-						historyEntries = history.filterTeamVsPlayer( teamA1, teamA2, teamB1 );
+						historyEntries = this.context.history.filterTeamVsPlayer( teamA1, teamA2, teamB1 );
 					} else {
-						historyEntries = history.filterPlayerVsPlayer( teamA1, teamB1 );
+						historyEntries = this.context.history.filterPlayerVsPlayer( teamA1, teamB1 );
 					}
 				}
 			}

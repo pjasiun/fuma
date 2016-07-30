@@ -10,7 +10,16 @@ describe( 'Registration command', () => {
 	let registrationCommand;
 
 	beforeEach( () => {
-		registrationCommand = new Registration( {} );
+		registrationCommand = new Registration( {
+			rank: {
+				getPlayer: () => {
+					return { score: 10 };
+				},
+				getExpected: () => {
+					return { blue: 10, red: 10 };
+				}
+			}
+		} );
 
 	} );
 
@@ -89,7 +98,7 @@ describe( 'Registration command', () => {
 
 			expect( response ).to.not.be.null;
 
-			expect( asyncResponses ).to.have.length( 21 );
+			expect( asyncResponses ).to.have.length( 29 );
 			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.true;
 			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
 		} );

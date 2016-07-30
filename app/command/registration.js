@@ -1,7 +1,5 @@
 'use strict';
 
-const rank = require( '../model/rank' );
-
 const registrationRegExp = /^(\+|-)\s*((\s*@[\S]+)*)$/;
 
 class Registration {
@@ -13,6 +11,7 @@ class Registration {
 	handleRequest( request, asyncResponse ) {
 		const registered = this.registered;
 		const registrationValues = registrationRegExp.exec( request.resolvedText );
+		const context = this.context;
 
 		if ( !registrationValues ) {
 			return null;
@@ -61,8 +60,8 @@ class Registration {
 					'Waiting for the next *' + ( 4 - playersCount ) + '*!' );
 			} else {
 				const players = registered.splice( -4 );
-				players.sort( ( playerA, playerB ) => rank.getPlayer( playerA ).score - rank.getPlayer( playerB ).score );
-				const expected = rank.getExpected( players[ 0 ], players[ 3 ], players[ 1 ], players[ 2 ] );
+				players.sort( ( playerA, playerB ) => context.rank.getPlayer( playerA ).score - context.rank.getPlayer( playerB ).score );
+				const expected = context.rank.getExpected( players[ 0 ], players[ 3 ], players[ 1 ], players[ 2 ] );
 
 				asyncResponse( request.response_url, ':fire: @' + players[ 0 ] + ' @' + players[ 3 ] +
 					' (' + expected.red + ' : ' + expected.blue + ')' +
