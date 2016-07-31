@@ -1,5 +1,8 @@
 # Fuma - Fussball Manager for Slack
 
+[![Build Status](https://travis-ci.org/jodator/fuma.svg?branch=master)](https://travis-ci.org/jodator/fuma)
+[![codecov](https://codecov.io/gh/jodator/fuma/branch/master/graph/badge.svg)](https://codecov.io/gh/jodator/fuma)
+
 A Slack bot for managing table soccer games.
 
 ## What it does
