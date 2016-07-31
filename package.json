@@ -4,7 +4,8 @@
   "description": "Fussball Manager for Slack",
   "main": "app.js",
   "scripts": {
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && codecov"
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && codecov",
+    "test-local": "istanbul cover _mocha"
   },
   "repository": {
     "type": "git",
