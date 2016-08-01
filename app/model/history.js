@@ -5,20 +5,19 @@ const Match = require( './match' );
 
 class History {
 	constructor( storage ) {
-		this.data = storage.data;
-		this.save = storage.save;
+		this.storage = storage;
 	}
 
 	add( match ) {
 		const now = new Date();
 
-		this.data.push( [ now.toString(), match.toString() ] );
-		this.save();
+		this.storage.data.push( [ now.toString(), match.toString() ] );
+		this.storage.save();
 	}
 
 	find( match ) {
 		const matchString = match.toString();
-		const data = this.data;
+		const data = this.storage.data;
 
 		for ( let i = data.length - 1; i >= 0; i-- ) {
 			if ( data[ i ][ 1 ] == matchString ) {
@@ -30,21 +29,21 @@ class History {
 	}
 
 	update( i, match ) {
-		this.data[ i ][ 1 ] = match.toString();
-		this.save();
+		this.storage.data[ i ][ 1 ] = match.toString();
+		this.storage.save();
 	}
 
 	remove( i ) {
-		this.data.splice( i, 1 );
-		this.save();
+		this.storage.data.splice( i, 1 );
+		this.storage.save();
 	}
 
 	get length() {
-		return this.data.length;
+		return this.storage.data.length;
 	}
 
 	getEntry( i ) {
-		const entry = this.data[ i ];
+		const entry = this.storage.data[ i ];
 		const day = moment( entry[ 0 ] ).calendar( null, {
 			sameDay: '[Today]',
 			nextDay: '[Tomorrow]',
@@ -144,6 +143,4 @@ class History {
 	}
 }
 
-const historyData = require( '../storage' )( 'history', { data: [] } );
-
-module.exports = new History( historyData );
+module.exports = History;

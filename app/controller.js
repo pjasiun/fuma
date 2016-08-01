@@ -7,8 +7,13 @@ const matchPublic = /^\s*public\s*(.*)$/;
 const aliases = require( './model/aliases' );
 
 class Controller {
-	constructor() {
+	constructor( storageRepository, persistentModels ) {
 		this.commands = [];
+		this.storageRepository = storageRepository;
+
+		for ( let model of Object.keys( persistentModels ) ) {
+			this[ model ] = persistentModels[ model ];
+		}
 	}
 
 	addCommand( name ) {
@@ -41,7 +46,7 @@ class Controller {
 
 		return {
 			'text': 'Incorrect command.\n' +
-					'Use `' + request.command + ' help` for help.'
+			'Use `' + request.command + ' help` for help.'
 		};
 	}
 }

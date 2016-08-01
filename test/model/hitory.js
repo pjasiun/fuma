@@ -1,36 +1,21 @@
 const expect = require( 'chai' ).expect;
 const mockery = require( 'mockery' );
 const Match = require( '../../app/model/match' );
+const History = require( '../../app/model/history' );
 
 describe( 'History model', () => {
 	'use strict';
 
 	/* @type History */
 	let history;
-	let historyData;
+	let storageMock;
 
-	before( () => {
-		mockery.enable( {
-			warnOnReplace: false,
-			warnOnUnregistered: false
-		} );
-
-		let storage = ( name, def ) => {
-			def.save = () => {
-			};
-
-			historyData = def.data;
-
-			return def;
+	beforeEach( () => {
+		storageMock = {
+			data: [], save: () => {
+			}
 		};
-
-		mockery.registerMock( '../storage', storage );
-
-		history = require( '../../app/model/history' );
-	} );
-
-	beforeEach( ()=> {
-		historyData && historyData.splice( 0, historyData.length );
+		history = new History( storageMock );
 	} );
 
 	after( () => {

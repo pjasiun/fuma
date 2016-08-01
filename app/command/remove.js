@@ -3,8 +3,6 @@
 const updateText = /^\s*remove\s*(.*)\s*$/;
 
 const Match = require( '../model/match' );
-const history = require( '../model/history' );
-const rank = require( '../model/rank' );
 
 class Remove {
 	constructor( context ) {
@@ -24,7 +22,7 @@ class Remove {
 			return;
 		}
 
-		const i = history.find( match );
+		const i = this.context.history.find( match );
 
 		if ( i === null ) {
 			return {
@@ -32,8 +30,8 @@ class Remove {
 			};
 		}
 
-		history.remove( i );
-		rank.reload();
+		this.context.history.remove( i );
+		this.context.rank.reload();
 
 		return {
 			'text': 'Match ' + match.toString() + ' removed!',

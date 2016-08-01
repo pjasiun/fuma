@@ -3,8 +3,6 @@
 const updateText = /^\s*update\s*(.*)\s*->\s*(.*)\s*$/;
 
 const Match = require( '../model/match' );
-const history = require( '../model/history' );
-const rank = require( '../model/rank' );
 
 class Update {
 	constructor( context ) {
@@ -25,7 +23,7 @@ class Update {
 			return;
 		}
 
-		const i = history.find( oldMatch );
+		const i = this.context.history.find( oldMatch );
 
 		if ( i === null ) {
 			return {
@@ -33,8 +31,8 @@ class Update {
 			};
 		}
 
-		history.update( i, newMatch );
-		rank.reload();
+		this.context.history.update( i, newMatch );
+		this.context.rank.reload();
 
 		return {
 			'text': 'Match updated form ' + oldMatch.toString() + ' to ' + newMatch.toString() + '!',

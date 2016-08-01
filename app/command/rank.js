@@ -1,7 +1,6 @@
 'use strict';
 
 const Table = require( 'cli-table' );
-const rank = require( '../model/rank' );
 
 class Rank {
 	constructor( context ) {
@@ -13,7 +12,7 @@ class Rank {
 			return;
 		}
 
-		const players = rank.getPlayers();
+		const players = this.context.rank.getPlayers();
 
 		if ( !players.length ) {
 			return {

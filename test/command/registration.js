@@ -10,7 +10,16 @@ describe( 'Registration command', () => {
 	let registrationCommand;
 
 	beforeEach( () => {
-		registrationCommand = new Registration( {} );
+		registrationCommand = new Registration( {
+			rank: {
+				getPlayer: () => {
+					return { score: 10 };
+				},
+				getExpected: () => {
+					return { blue: 10, red: 10 };
+				}
+			}
+		} );
 
 	} );
 
@@ -68,8 +77,8 @@ describe( 'Registration command', () => {
 			} );
 
 			expect( asyncResponses ).to.have.length( 2 );
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.greaterThan( -1 );
 		} );
 
 		it( 'should add 20 users', () => {
@@ -89,9 +98,9 @@ describe( 'Registration command', () => {
 
 			expect( response ).to.not.be.null;
 
-			expect( asyncResponses ).to.have.length( 21 );
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
+			expect( asyncResponses ).to.have.length( 29 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.greaterThan( -1 );
 		} );
 
 		it( 'should start match for 4 users', () => {
@@ -108,10 +117,10 @@ describe( 'Registration command', () => {
 			} );
 
 			expect( asyncResponses ).to.have.length( 4 );
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.true;
-			expect( asyncResponses.includes( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.true;
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.greaterThan( -1 );
 		} );
 
 		it( 'should start match for first 4 users and queue next user', () => {
@@ -129,10 +138,10 @@ describe( 'Registration command', () => {
 
 			expect( asyncResponses ).to.have.length( 5 );
 			const firstPlayerAddedMsg = 'A new player joined the next match! Waiting for the next *3*!';
-			expect( asyncResponses.includes( firstPlayerAddedMsg ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.true;
-			expect( asyncResponses.includes( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.true;
+			expect( asyncResponses.indexOf( firstPlayerAddedMsg ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.greaterThan( -1 );
 
 			let fistUserResponsesCount = 0;
 
@@ -221,8 +230,8 @@ describe( 'Registration command', () => {
 			} );
 
 			expect( asyncResponses ).to.have.length( 2 );
-			expect( asyncResponses.includes( 'User removed from the match. :chicken: Now we need 4 players.' ) ).to.be.true;
-			expect( asyncResponses.includes( 'User removed from the match. :chicken: Now we need 3 players.' ) ).to.be.true;
+			expect( asyncResponses.indexOf( 'User removed from the match. :chicken: Now we need 4 players.' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'User removed from the match. :chicken: Now we need 3 players.' ) ).to.be.greaterThan( -1 );
 		} );
 
 		it( 'should start match for 4 users', () => {
@@ -239,10 +248,10 @@ describe( 'Registration command', () => {
 			} );
 
 			expect( asyncResponses ).to.have.length( 4 );
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.true;
-			expect( asyncResponses.includes( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.true;
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.greaterThan( -1 );
 		} );
 
 		it( 'should start match for first 4 users and queue next user', () => {
@@ -260,10 +269,10 @@ describe( 'Registration command', () => {
 
 			expect( asyncResponses ).to.have.length( 5 );
 			const firstPlayerAddedMsg = 'A new player joined the next match! Waiting for the next *3*!';
-			expect( asyncResponses.includes( firstPlayerAddedMsg ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.true;
-			expect( asyncResponses.includes( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.true;
-			expect( asyncResponses.includes( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.true;
+			expect( asyncResponses.indexOf( firstPlayerAddedMsg ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *1*!' ) ).to.be.greaterThan( -1 );
+			expect( asyncResponses.indexOf( ':fire: @pjasiun @lolz (10 : 10) @fredck @scofalik' ) ).to.be.greaterThan( -1 );
 
 			let fistUserResponsesCount = 0;
 

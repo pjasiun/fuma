@@ -3,8 +3,6 @@
 const commandRegExp = /^expected\s*@(\S*)\s*@(\S*)\s*\:\s*@(\S*)\s*@(\S*)\s*$/;
 
 const Match = require( '../model/match' );
-const history = require( '../model/history' );
-const rank = require( '../model/rank' );
 
 class Expected {
 	constructor( context ) {
@@ -23,11 +21,11 @@ class Expected {
 		const blue1 = values[ 3 ];
 		const blue2 = values[ 4 ];
 
-		const expected = rank.getExpected( red1, red2, blue1, blue2 );
+		const expected = this.context.rank.getExpected( red1, red2, blue1, blue2 );
 
 		return {
 			'text': 'Match expected result: ' +
-				'@' + red1 + ' @' + red2 + ' ' + expected.red + ' : ' + expected.blue + ' @' + blue1 + ' @' + blue2
+			'@' + red1 + ' @' + red2 + ' ' + expected.red + ' : ' + expected.blue + ' @' + blue1 + ' @' + blue2
 		};
 	}
 }

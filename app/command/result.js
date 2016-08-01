@@ -1,8 +1,6 @@
 'use strict';
 
 const Match = require( '../model/match' );
-const history = require( '../model/history' );
-const rank = require( '../model/rank' );
 
 class Result {
 	constructor( context ) {
@@ -16,9 +14,9 @@ class Result {
 			return;
 		}
 
-		history.add( match );
+		this.context.history.add( match );
 
-		const changes = rank.addMatch( match );
+		const changes = this.context.rank.addMatch( match );
 
 		return {
 			'text': 'Match added to the history!\n' +
