@@ -23,7 +23,7 @@ describe( 'Registration command', () => {
 
 	} );
 
-	it( 'should return false for wrong command', () => {
+	it( 'should return undefined for wrong command', () => {
 		const wrongCommands = [
 			'',
 			'lolz',
@@ -32,7 +32,7 @@ describe( 'Registration command', () => {
 		];
 
 		for ( let command of wrongCommands ) {
-			expect( registrationCommand.handleRequest( makeRequest( command ), () => expect.fail() ) ).to.be.null;
+			expect( registrationCommand.handleRequest( makeRequest( command ), () => expect.fail() ) ).to.be.undefined;
 		}
 	} );
 

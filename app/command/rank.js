@@ -22,9 +22,13 @@ class Rank {
 			};
 		}
 
-		const table = new Table( { style: { compact: true } } );
+		const tableData = [];
 
-		table.push( [ '', 'Player:', 'Score:', 'Matches:' ], [] );
+		const table = new Table( {
+			head: [ '', 'Player:', 'Score:', 'Matches:' ],
+			style: { compact: true },
+			colAligns: [ 'right', 'left', 'right', 'right' ]
+		} );
 
 		let rankingPosition = 1;
 		let previousPosScore;
@@ -32,26 +36,21 @@ class Rank {
 		for ( let player of players ) {
 			let posLabel = rankingPosition + '.';
 
-			if ( rankingPosition === 1 ) {
-				posLabel + ' 👑';
-			}
-
-			if ( previousPosScore == player.score ) {
+			if ( previousPosScore === player.score ) {
 				posLabel = '';
 			}
 
 			if ( player.matches >= minMatches ) {
 				table.push( [ posLabel, player.name, player.score, player.matches ] );
+				tableData.push( [ posLabel, player.name, '' + player.score, '' + player.matches ] );
+				rankingPosition++;
 			}
 
-			rankingPosition++;
 			previousPosScore = player.score;
 		}
 
-		console.log( table.toString() );
-
 		return {
-			'text': '```' + table.toString() + '```'
+			text: '```' + table.toString() + '```'
 		};
 	}
 }

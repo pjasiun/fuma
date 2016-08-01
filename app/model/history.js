@@ -44,7 +44,7 @@ class History {
 
 	getEntry( i ) {
 		const entry = this.storage.data[ i ];
-		const day = moment( entry[ 0 ] ).calendar( null, {
+		const day = moment( new Date( entry[ 0 ] ) ).calendar( null, {
 			sameDay: '[Today]',
 			nextDay: '[Tomorrow]',
 			nextWeek: 'dddd',
@@ -52,7 +52,7 @@ class History {
 			lastWeek: '[Last] dddd',
 			sameElse: 'DD/MM/YYYY'
 		} );
-		const time = moment( entry[ 0 ] ).format( 'H:mm' );
+		const time = moment( new Date( entry[ 0 ] ) ).format( 'H:mm' );
 		const match = entry[ 1 ];
 
 		return {
