@@ -1,5 +1,4 @@
 const expect = require( 'chai' ).expect;
-const mockery = require( 'mockery' );
 const Match = require( '../../app/model/match' );
 const History = require( '../../app/model/history' );
 
@@ -16,10 +15,6 @@ describe( 'History model', () => {
 			}
 		};
 		history = new History( storageMock );
-	} );
-
-	after( () => {
-		mockery.disable();
 	} );
 
 	it( 'should add entries', () => {

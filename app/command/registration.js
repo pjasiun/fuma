@@ -14,7 +14,7 @@ class Registration {
 		const context = this.context;
 
 		if ( !registrationValues ) {
-			return null;
+			return;
 		}
 
 		const users = registrationValues[ 2 ].split( '@' )

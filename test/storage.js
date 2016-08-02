@@ -1,7 +1,6 @@
 const fs = require( 'fs' );
 
 const expect = require( 'chai' ).expect;
-const mockery = require( 'mockery' );
 
 const StorageRepository = require( '../app/storage' );
 
