@@ -2,7 +2,7 @@
 
 const Table = require( 'cli-table' );
 
-const minMatches = 20;
+const rankText = /^\s*rank\s*(rookies|oldboys|full)*$/;
 
 class Rank {
 	constructor( context ) {
@@ -10,11 +10,18 @@ class Rank {
 	}
 
 	handleRequest( request ) {
-		if ( request.text != 'rank' ) {
+		const values = rankText.exec( request.resolvedText );
+
+		if ( !values ) {
 			return;
 		}
 
-		const players = this.context.rank.getPlayers();
+		const options = {
+			rookies: values[ 1 ] === 'full' || values[ 1 ] === 'rookies',
+			oldBoys: values[ 1 ] === 'full' || values[ 1 ] === 'oldboys'
+		};
+
+		const players = this.context.rank.getPlayers( options );
 
 		if ( !players.length ) {
 			return {
@@ -40,11 +47,8 @@ class Rank {
 				posLabel = '';
 			}
 
-			if ( player.matches >= minMatches ) {
-				table.push( [ posLabel, player.name, player.score, player.matches ] );
-				tableData.push( [ posLabel, player.name, '' + player.score, '' + player.matches ] );
-				rankingPosition++;
-			}
+			table.push( [ posLabel, player.name, player.score, player.matches ] );
+			rankingPosition++;
 
 			previousPosScore = player.score;
 		}

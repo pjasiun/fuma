@@ -15,7 +15,7 @@ class Match {
 	 * @param {Date} date.
 	 */
 	constructor( red1, red2, redScore, blueScore, blue1, blue2, date ) {
-		this.date = date ? date : new Date();
+		this.date = date;
 
 		// Reds are the winning team.
 		if ( redScore > blueScore ) {

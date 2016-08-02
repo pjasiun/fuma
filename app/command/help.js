@@ -17,7 +17,7 @@ class Result {
 		table.push(
 			[ 'help', 'help page' ],
 			[ '@a @b 10 : 7 @c @d', 'enter match result' ],
-			[ 'rank', 'foosball ranking' ],
+			[ 'rank [rookies|oldboys|full]', 'foosball ranking' ],
 			[ 'history', 'matches history' ],
 			[ 'history @a [@b]', 'matches player\'s (or team) history' ],
 			[ 'history @a [@b] : @c [@d]', 'matches history of versus matches' ],
@@ -36,7 +36,7 @@ class Result {
 
 		return {
 			'text': 'Here is a list of available commands:\n' +
-					'```' + table.toString() + '```'
+			'```' + table.toString() + '```'
 		};
 	}
 }

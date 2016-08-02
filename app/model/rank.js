@@ -107,6 +107,13 @@ class Rank {
 		return expected;
 	}
 
+	/**
+	 * @param {Object} options
+	 * @param {boolean} options.rookies
+	 * @param {boolean} options.oldBoys
+	 *
+	 * @returns {Array.<*>}
+	 */
 	getPlayers( options ) {
 		let players = Array.from( this.players.values() );
 
