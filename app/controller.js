@@ -4,8 +4,6 @@ const sendRequest = require( 'request' );
 
 const matchPublic = /^\s*public\s*(.*)$/;
 
-const aliases = require( './model/aliases' );
-
 class Controller {
 	constructor( storageRepository, persistentModels ) {
 		this.commands = [];
@@ -23,7 +21,7 @@ class Controller {
 	}
 
 	handleRequest( request ) {
-		request.resolvedText = aliases.resolve( request.text || '' );
+		request.resolvedText = this.aliases.resolve( request.text || '' );
 		const values = matchPublic.exec( request.text );
 		let isPublic = false;
 
