@@ -2,26 +2,25 @@
 
 class Aliases {
 	constructor( storage ) {
-		this.data = storage.data;
-		this.save = storage.save;
+		this.storage = storage;
 	}
 
 	getValue( alias ) {
-		return this.data[ alias ];
+		return this.storage.data[ alias ];
 	}
 
 	set( alias, value ) {
-		this.data[ alias ] = value;
-		this.save();
+		this.storage.data[ alias ] = value;
+		this.storage.save();
 	}
 
 	delete( alias ) {
-		delete this.data[ alias ];
-		this.save();
+		delete this.storage.data[ alias ];
+		this.storage.save();
 	}
 
 	*[ Symbol.iterator ]() {
-		for ( let alias in this.data ) {
+		for ( let alias in this.storage.data ) {
 			yield alias;
 		}
 	}
