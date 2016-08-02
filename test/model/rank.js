@@ -5,10 +5,16 @@ const Rank = require( '../../app/model/rank' );
 describe( 'Rank model', () => {
 	'use strict';
 
-	const playerA = { name: 'a', score: 1000, matches: 1 };
-	const playerB = { name: 'b', score: 3000, matches: 1 };
-	const playerC = { name: 'c', score: 2000, matches: 1 };
-	const playerD = { name: 'd', score: 2000, matches: 1 };
+	const now = new Date();
+
+	const playerA = { name: 'a', score: 1000, matches: 30, lastGame: now };
+	const playerB = { name: 'b', score: 3000, matches: 30, lastGame: now };
+	const playerC = { name: 'c', score: 2000, matches: 30, lastGame: now };
+	const playerD = { name: 'd', score: 2000, matches: 30, lastGame: now };
+	const rookieA = { name: 'ra', score: 1500, matches: 19, lastGame: now };
+	const rookieB = { name: 'rb', score: 4000, matches: 2, lastGame: now };
+	const oldBoyA = { name: 'oa', score: 3500, matches: 100, lastGame: new Date( '2016 01 01' ) };
+	const oldBoyB = { name: 'ob', score: 1800, matches: 100, lastGame: new Date( '2016 01 01' ) };
 
 	const historyMock = {};
 
@@ -36,9 +42,58 @@ describe( 'Rank model', () => {
 			rank.setPlayer( playerB );
 			rank.setPlayer( playerC );
 
-			const players = rank.getPlayers();
+			expect( rank.getPlayers() ).to.deep.equal( [ playerB, playerC, playerA ] );
+		} );
 
-			expect( players ).to.deep.equal( [ playerB, playerC, playerA ] );
+		it( 'should return existing players with filtered out rookies and oldboys', () => {
+			rank.setPlayer( playerA );
+			rank.setPlayer( playerB );
+			rank.setPlayer( playerC );
+			rank.setPlayer( rookieA );
+			rank.setPlayer( rookieB );
+			rank.setPlayer( oldBoyA );
+			rank.setPlayer( oldBoyB );
+
+			expect( rank.getPlayers() ).to.deep.equal( [ playerB, playerC, playerA ] );
+		} );
+
+		it( 'should return existing players with rookies', () => {
+			rank.setPlayer( playerA );
+			rank.setPlayer( playerB );
+			rank.setPlayer( playerC );
+			rank.setPlayer( rookieA );
+			rank.setPlayer( rookieB );
+			rank.setPlayer( oldBoyA );
+			rank.setPlayer( oldBoyB );
+
+			expect( rank.getPlayers( { rookies: true } ) ).to.deep.equal( [ rookieB, playerB, playerC, rookieA, playerA ] );
+		} );
+
+		it( 'should return existing players with oldboys', () => {
+			rank.setPlayer( playerA );
+			rank.setPlayer( playerB );
+			rank.setPlayer( playerC );
+			rank.setPlayer( rookieA );
+			rank.setPlayer( rookieB );
+			rank.setPlayer( oldBoyA );
+			rank.setPlayer( oldBoyB );
+
+			expect( rank.getPlayers( { oldBoys: true } ) ).to.deep.equal( [ oldBoyA, playerB, playerC, oldBoyB, playerA ] );
+		} );
+
+		it( 'should return all players', () => {
+			rank.setPlayer( playerA );
+			rank.setPlayer( playerB );
+			rank.setPlayer( playerC );
+			rank.setPlayer( rookieA );
+			rank.setPlayer( rookieB );
+			rank.setPlayer( oldBoyA );
+			rank.setPlayer( oldBoyB );
+
+			expect( rank.getPlayers( {
+				oldBoys: true,
+				rookies: true
+			} ) ).to.deep.equal( [ rookieB, oldBoyA, playerB, playerC, oldBoyB, rookieA, playerA ] );
 		} );
 	} );
 
@@ -72,6 +127,16 @@ describe( 'Rank model', () => {
 			} );
 
 			expect( rank.getExpected( 'a', 'c', 'b', 'd' ) ).to.deep.equal( { red: 10, blue: 7.94 } );
+		} );
+
+		it( 'should add players to rank and update lastGame', () => {
+			expect( rank.getPlayer( 'a' ) ).to.deep.equal( { name: 'a', score: 2000, matches: 0 } );
+
+			rank.addMatch( Match.createFromText( '@a @c 10 : 0 @b @d', now.toString() ) );
+
+			const convertedNow = new Date( now.toString() );
+
+			expect( rank.getPlayer( 'a' ) ).to.deep.equal( { name: 'a', score: 2020, matches: 1, lastGame: convertedNow } );
 		} );
 	} );
 

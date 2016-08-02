@@ -3,7 +3,20 @@
 const matchText = /^\s*@(\S*)\s*@(\S*)\s*(\d+)\s*\:\s*(\d+)\s*@(\S*)\s*@(\S*)\s*$/;
 
 class Match {
-	constructor( red1, red2, redScore, blueScore, blue1, blue2 ) {
+	/**
+	 * Creates match.
+	 *
+	 * @param {String} red1
+	 * @param {String} red2
+	 * @param {Number} redScore
+	 * @param {Number} blueScore
+	 * @param {String} blue1
+	 * @param {String} blue2
+	 * @param {Date} date.
+	 */
+	constructor( red1, red2, redScore, blueScore, blue1, blue2, date ) {
+		this.date = date ? date : new Date();
+
 		// Reds are the winning team.
 		if ( redScore > blueScore ) {
 			this.red1 = red1;
@@ -22,19 +35,29 @@ class Match {
 		}
 	}
 
-	static createFromText( text ) {
+	/**
+	 * Creates match object from JSON history entry values.
+	 *
+	 * @param {String} text
+	 * @param {String} [dateString] String value of date object, ie: `new Date().toString()`. Defaults to `new Date()`.
+	 * @returns {*}
+	 */
+	static createFromText( text, dateString ) {
 		const values = matchText.exec( text );
 
 		if ( !values ) {
 			return null;
 		}
 
-		return new Match( values[ 1 ],
+		return new Match(
+			values[ 1 ],
 			values[ 2 ],
 			parseInt( values[ 3 ] ),
 			parseInt( values[ 4 ] ),
 			values[ 5 ],
-			values[ 6 ] );
+			values[ 6 ],
+			new Date( dateString )
+		);
 	}
 
 	toString() {

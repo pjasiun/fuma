@@ -3,6 +3,9 @@
 const elo = require( 'elo-rank' )( 40 );
 const Match = require( './match' );
 
+const numberOfDaysToBeAnOldBoy = 90;
+const numberOfMatchesToBeARookie = 20;
+
 class Rank {
 	constructor( history ) {
 		this.players = new Map();
@@ -65,6 +68,11 @@ class Rank {
 		blue1.matches++;
 		blue2.matches++;
 
+		red1.lastGame = match.date;
+		red2.lastGame = match.date;
+		blue1.lastGame = match.date;
+		blue2.lastGame = match.date;
+
 		this.setPlayer( red1 );
 		this.setPlayer( red2 );
 		this.setPlayer( blue1 );
@@ -99,10 +107,21 @@ class Rank {
 		return expected;
 	}
 
-	getPlayers() {
+	getPlayers( options ) {
 		let players = Array.from( this.players.values() );
 
-		return players.sort( ( a, b ) => b.score - a.score );
+		const includeRookies = options && options.rookies || false;
+		const includeOldBoys = options && options.oldBoys || false;
+		const now = new Date();
+
+		const lastDayToBeAnOldBoy = new Date( now.getFullYear(), now.getMonth(), now.getDay() - numberOfDaysToBeAnOldBoy );
+
+		return players.filter( ( player ) => {
+			const isRemoveRookie = !includeRookies && player.matches < numberOfMatchesToBeARookie;
+			const isRemoveOldBoy = !includeOldBoys && lastDayToBeAnOldBoy > player.lastGame;
+
+			return !(isRemoveRookie || isRemoveOldBoy);
+		} ).sort( ( a, b ) => b.score - a.score );
 	}
 
 	reload() {
