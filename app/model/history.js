@@ -9,9 +9,7 @@ class History {
 	}
 
 	add( match ) {
-		const now = new Date();
-
-		this.storage.data.push( [ now.toString(), match.toString() ] );
+		this.storage.data.push( [ match.date ? match.date.toString() : (new Date()).toString(), match.toString() ] );
 		this.storage.save();
 	}
 

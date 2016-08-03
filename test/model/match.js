@@ -2,16 +2,18 @@ const expect = require( 'chai' ).expect;
 const Match = require( '../../app/model/match' );
 
 describe( 'Match', () => {
+	const date = ( new Date( '2016 12 12' ) ).toString();
+
 	it( 'should be created from the regexp', () => {
-		expectMatchToHaveStandardProperties( Match.createFromText( '@r1 @r2 10 : 7 @bl1 @bl2' ) );
+		expectMatchToHaveStandardProperties( Match.createFromText( '@r1 @r2 10 : 7 @bl1 @bl2', date ) );
 	} );
 
 	it( 'should be created from the regexp whithout spaces', () => {
-		expectMatchToHaveStandardProperties( Match.createFromText( '@r1@r2 10:7 @bl1@bl2' ) );
+		expectMatchToHaveStandardProperties( Match.createFromText( '@r1@r2 10:7 @bl1@bl2', date ) );
 	} );
 
 	it( 'should be created from the regexp whith additional spaces', () => {
-		expectMatchToHaveStandardProperties( Match.createFromText( '\t@r1\t@r2 10\t:7  @bl1    @bl2   ' ) );
+		expectMatchToHaveStandardProperties( Match.createFromText( '\t@r1\t@r2 10\t:7  @bl1    @bl2   ', date ) );
 	} );
 
 	it( 'should not be created from the cropped text', () => {
@@ -94,5 +96,6 @@ describe( 'Match', () => {
 		expect( match.blueScore ).to.equals( 7 );
 		expect( match.blue1 ).to.equals( 'bl1' );
 		expect( match.blue2 ).to.equals( 'bl2' );
+		expect( match.date.toString() ).to.equals( date );
 	}
 } );
