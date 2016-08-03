@@ -4,7 +4,7 @@ const elo = require( 'elo-rank' )( 40 );
 const Match = require( './match' );
 
 const numberOfDaysToBeAnOldBoy = 90;
-const numberOfMatchesToBeARookie = 20;
+const numberOfMatchesToStopBeingARookie = 20;
 
 class Rank {
 	constructor( history ) {
@@ -124,7 +124,7 @@ class Rank {
 		const lastDayToBeAnOldBoy = new Date( now.getFullYear(), now.getMonth(), now.getDay() - numberOfDaysToBeAnOldBoy );
 
 		return players.filter( ( player ) => {
-			const isRemoveRookie = !includeRookies && player.matches < numberOfMatchesToBeARookie;
+			const isRemoveRookie = !includeRookies && player.matches < numberOfMatchesToStopBeingARookie;
 			const isRemoveOldBoy = !includeOldBoys && lastDayToBeAnOldBoy > player.lastGame;
 
 			return !(isRemoveRookie || isRemoveOldBoy);
