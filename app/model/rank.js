@@ -3,7 +3,7 @@
 const elo = require( 'elo-rank' )( 40 );
 const Match = require( './match' );
 
-const numberOfDaysToBeAnOldBoy = 90;
+const numberOfDaysToBeAnOldBoy = 30;
 const numberOfMatchesToStopBeingARookie = 20;
 
 class Rank {
