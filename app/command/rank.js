@@ -1,6 +1,7 @@
 'use strict';
 
 const Table = require( 'cli-table' );
+const moment = require( 'moment' );
 
 const rankText = /^\s*rank\s*(rookies|oldboys|full)*$/;
 
@@ -32,9 +33,9 @@ class Rank {
 		const tableData = [];
 
 		const table = new Table( {
-			head: [ '', 'Player:', 'Score:', 'Matches:' ],
+			head: [ '', 'Player:', 'Score:', 'Matches:', 'Last game:' ],
 			style: { compact: true },
-			colAligns: [ 'right', 'left', 'right', 'right' ]
+			colAligns: [ 'right', 'left', 'right', 'right', 'left' ]
 		} );
 
 		let rankingPosition = 1;
@@ -47,7 +48,9 @@ class Rank {
 				posLabel = '';
 			}
 
-			table.push( [ posLabel, player.name, player.score, player.matches ] );
+			const lastGame =  moment( player.lastGame ).fromNow();
+
+			table.push( [ posLabel, player.name, player.score, player.matches, lastGame ] );
 			rankingPosition++;
 
 			previousPosScore = player.score;

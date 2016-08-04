@@ -56,7 +56,8 @@ class History {
 		return {
 			day: day,
 			time: time,
-			match: match
+			match: match,
+			date: entry[ 0 ]
 		};
 	}
 
@@ -66,7 +67,7 @@ class History {
 		for ( let i = 0; i < this.length; i++ ) {
 			let entry = this.getEntry( i );
 
-			let match = Match.createFromText( entry.match );
+			let match = Match.createFromText( entry.match, entry.date );
 
 			if ( match.hasPlayer( player ) ) {
 				output.push( entry );
@@ -82,7 +83,7 @@ class History {
 		for ( let i = 0; i < this.length; i++ ) {
 			let entry = this.getEntry( i );
 
-			let match = Match.createFromText( entry.match );
+			let match = Match.createFromText( entry.match, entry.date );
 
 			if ( match.isVersus( playerA, playerB ) ) {
 				output.push( entry );
@@ -98,7 +99,7 @@ class History {
 		for ( let i = 0; i < this.length; i++ ) {
 			let entry = this.getEntry( i );
 
-			let match = Match.createFromText( entry.match );
+			let match = Match.createFromText( entry.match, entry.date );
 
 			if ( match.hasTeam( playerA, playerB ) ) {
 				output.push( entry );
@@ -114,7 +115,7 @@ class History {
 		for ( let i = 0; i < this.length; i++ ) {
 			let entry = this.getEntry( i );
 
-			let match = Match.createFromText( entry.match );
+			let match = Match.createFromText( entry.match, entry.date );
 
 			if ( match.hasTeam( playerA, playerB ) && match.hasTeam( playerC, playerD ) ) {
 				output.push( entry );
@@ -130,7 +131,7 @@ class History {
 		for ( let i = 0; i < this.length; i++ ) {
 			let entry = this.getEntry( i );
 
-			let match = Match.createFromText( entry.match );
+			let match = Match.createFromText( entry.match, entry.date );
 
 			if ( match.hasTeam( playerA, playerB ) && match.isVersus( playerA, playerC ) ) {
 				output.push( entry );

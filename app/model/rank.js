@@ -127,7 +127,7 @@ class Rank {
 			const isRemoveRookie = !includeRookies && player.matches < numberOfMatchesToStopBeingARookie;
 			const isRemoveOldBoy = !includeOldBoys && lastDayToBeAnOldBoy > player.lastGame;
 
-			return !(isRemoveRookie || isRemoveOldBoy);
+			return !( isRemoveRookie || isRemoveOldBoy );
 		} ).sort( ( a, b ) => b.score - a.score );
 	}
 
@@ -135,7 +135,7 @@ class Rank {
 		this.players.clear();
 
 		for ( let i = 0; i < this.history.length; i++ ) {
-			this.addMatch( Match.createFromText( this.history.getEntry( i ).match ) );
+			this.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
 		}
 	}
 }
