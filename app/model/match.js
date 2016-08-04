@@ -17,6 +17,10 @@ class Match {
 	constructor( red1, red2, redScore, blueScore, blue1, blue2, date ) {
 		this.date = date;
 
+		if ( !date || isNaN( date.getDate() ) ) {
+			this.date = new Date();
+		}
+
 		// Reds are the winning team.
 		if ( redScore > blueScore ) {
 			this.red1 = red1;
@@ -56,7 +60,7 @@ class Match {
 			parseInt( values[ 4 ] ),
 			values[ 5 ],
 			values[ 6 ],
-			new Date( dateString )
+			dateString ? new Date( dateString ) : new Date()
 		);
 	}
 

@@ -8,12 +8,19 @@ describe( 'Match', () => {
 		expectMatchToHaveStandardProperties( Match.createFromText( '@r1 @r2 10 : 7 @bl1 @bl2', date ) );
 	} );
 
-	it( 'should be created from the regexp whithout spaces', () => {
+	it( 'should be created from the regexp without spaces', () => {
 		expectMatchToHaveStandardProperties( Match.createFromText( '@r1@r2 10:7 @bl1@bl2', date ) );
 	} );
 
-	it( 'should be created from the regexp whith additional spaces', () => {
+	it( 'should be created from the regexp with additional spaces', () => {
 		expectMatchToHaveStandardProperties( Match.createFromText( '\t@r1\t@r2 10\t:7  @bl1    @bl2   ', date ) );
+	} );
+
+	it( 'should be created with date', () => {
+		expect( Match.createFromText( '@a @b 10 : 2 @c @d' ).date.toString() )
+			.to.not.equal( 'Invalid Date' );
+		expect( ( new Match( '@a', '@b', 10, 2, '@c', '@d', new Date( undefined ) ) ).date.toString() )
+			.to.not.equal( 'Invalid Date' );
 	} );
 
 	it( 'should not be created from the cropped text', () => {
