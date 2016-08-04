@@ -1,6 +1,7 @@
 const expect = require( 'chai' ).expect;
 
 const Table = require( 'cli-table' );
+const moment = require( 'moment' );
 
 const Rank = require( '../../app/command/rank' );
 
@@ -10,7 +11,7 @@ describe( 'Rank command', () => {
 
 	beforeEach( () => {
 		table = new Table( {
-			head: [ '', 'Player:', 'Score:', 'Matches:' ],
+			head: [ '', 'Player:', 'Score:', 'Matches:', 'Last game:' ],
 			style: { compact: true },
 			colAligns: [ 'right', 'left', 'right', 'right' ]
 		} );
@@ -40,21 +41,22 @@ describe( 'Rank command', () => {
 	} );
 
 	it( 'should return rank for players', () => {
+		const date = new Date();
 		const rankCommand = new Rank( {
 			rank: {
 				getPlayers: () => [
-					{ name: 'A', score: 3000, matches: 100 },
-					{ name: 'B', score: 2000, matches: 100 },
-					{ name: 'C', score: 1000, matches: 100 },
-					{ name: 'D', score: 1000, matches: 100 }
+					{ name: 'A', score: 3000, matches: 100, lastGame: date },
+					{ name: 'B', score: 2000, matches: 100, lastGame: date },
+					{ name: 'C', score: 1000, matches: 100, lastGame: date },
+					{ name: 'D', score: 1000, matches: 100, lastGame: date }
 				]
 			}
 		} );
 
-		table.push( [ '1.', 'A', 3000, 100 ] );
-		table.push( [ '2.', 'B', 2000, 100 ] );
-		table.push( [ '3.', 'C', 1000, 100 ] );
-		table.push( [ '', 'D', 1000, 100 ] );
+		table.push( [ '1.', 'A', 3000, 100, moment( date ).fromNow() ] );
+		table.push( [ '2.', 'B', 2000, 100, moment( date ).fromNow() ] );
+		table.push( [ '3.', 'C', 1000, 100, moment( date ).fromNow() ] );
+		table.push( [ '', 'D', 1000, 100, moment( date ).fromNow() ] );
 
 		expect( rankCommand.handleRequest( makeRequest( 'rank' ) ) )
 			.to.have.property( 'text' )
