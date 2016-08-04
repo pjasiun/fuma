@@ -22,17 +22,22 @@ rank.reload();
 
 const controller = new Controller( storageRepository, { history: history, aliases: aliases, rank: rank } );
 
-controller.addCommand( 'result' );
-controller.addCommand( 'history' );
-controller.addCommand( 'help' );
-controller.addCommand( 'remove' );
-controller.addCommand( 'update' );
-controller.addCommand( 'rank' );
-controller.addCommand( 'expected' );
-controller.addCommand( 'registration' );
-controller.addCommand( 'set-alias' );
-controller.addCommand( 'delete-alias' );
-controller.addCommand( 'aliases' );
+const commands = [ 'result',
+	'history',
+	'help',
+	'remove',
+	'update',
+	'rank',
+	'expected',
+	'registration',
+	'set-alias',
+	'delete-alias',
+	'aliases' ];
+
+for ( let command of commands ) {
+	const Command = require( './command/' + command );
+	controller.addCommand( new Command( controller ) );
+}
 
 const server = http.createServer( function( request, response ) {
 	let requestData = '';

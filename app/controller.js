@@ -14,21 +14,21 @@ class Controller {
 		}
 	}
 
-	addCommand( name ) {
-		const Command = require( './command/' + name );
-		const instance = new Command( this );
-		this.commands.push( instance );
+	addCommand( command ) {
+		this.commands.push( command );
 	}
 
 	handleRequest( request ) {
-		request.resolvedText = this.aliases.resolve( request.text || '' );
-		const values = matchPublic.exec( request.text );
 		let isPublic = false;
+
+		const values = matchPublic.exec( request.text );
 
 		if ( values ) {
 			request.text = values[ 1 ];
 			isPublic = true;
 		}
+
+		request.resolvedText = this.aliases.resolve( request.text || '' );
 
 		for ( let command of this.commands ) {
 			const response = command.handleRequest( request, asyncResponse );
