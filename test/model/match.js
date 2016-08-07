@@ -1,7 +1,7 @@
 const expect = require( 'chai' ).expect;
 const Match = require( '../../app/model/match' );
 
-describe( 'Match', () => {
+describe( 'Match model', () => {
 	const date = ( new Date( '2016 12 12' ) ).toString();
 
 	it( 'should be created from the regexp', () => {

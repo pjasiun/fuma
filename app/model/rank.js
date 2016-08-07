@@ -62,6 +62,7 @@ class Rank {
 		ret.red2.newScore = red2.score;
 		ret.blue1.newScore = blue1.score;
 		ret.blue2.newScore = blue2.score;
+		ret.match = match;
 
 		red1.matches++;
 		red2.matches++;
@@ -136,6 +137,14 @@ class Rank {
 
 		for ( let i = 0; i < this.history.length; i++ ) {
 			this.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
+		}
+	}
+
+	*[ Symbol.iterator ]() {
+		const lolz = new Rank( this.history );
+
+		for ( let i = 0; i < this.history.length; i++ ) {
+			yield lolz.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
 		}
 	}
 }
