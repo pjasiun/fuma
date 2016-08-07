@@ -22,19 +22,22 @@ const aliases = new Aliases( storageRepository.createStorage( 'aliases', {} ) );
 const rank = new Rank( history );
 rank.reload();
 
-const controller = new Controller( storageRepository, { history: history, aliases: aliases, rank: rank } );
+const controller = new Controller( storageRepository, { history: history, aliases: aliases, rank: rank, config: config } );
 
-const commands = [ 'result',
-	'history',
-	'help',
-	'remove',
-	'update',
-	'rank',
-	'expected',
-	'registration',
-	'set-alias',
+const commands = [
+	'aliases',
 	'delete-alias',
-	'aliases' ];
+	'expected',
+	'help',
+	'history',
+	'rank',
+	'registration',
+	'remove',
+	'result',
+	'set-alias',
+	'stats',
+	'update'
+];
 
 for ( let command of commands ) {
 	const Command = require( './command/' + command );

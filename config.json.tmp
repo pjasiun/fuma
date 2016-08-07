@@ -1,5 +1,6 @@
 {
 	"token": "slack token",
 	"port": 8080,
-	"debug": false
+	"debug": false,
+	"host": "localhost"
 }
