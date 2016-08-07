@@ -6,16 +6,11 @@ class Stats {
 	}
 
 	getPlayerStats( player ) {
-		const rank = this.rank;
-		const allUpdates = [];
-
-		for ( let update of rank ) {
-			allUpdates.push( update );
-		}
+		const allUpdates = getAllUpdates( this.rank );
 
 		return {
 			name: player,
-			rankHistory: getRankHistory( allUpdates, player ),
+			rankHistory: calculatePlayerRankHistory( allUpdates, player ),
 			lastGames: getLastGames( allUpdates, player ),
 			records: getRecords( allUpdates, player )
 		}
@@ -23,109 +18,25 @@ class Stats {
 
 	getFull() {
 		const players = this.rank.getPlayers();
-		const allUpdates = [];
-
-		for ( let update of this.rank ) {
-			allUpdates.push( update );
-		}
-
-		const kingTimeline = [];
-
-		let lastKing = { from: false, to: false, name: '' };
-
-		for ( let update of allUpdates ) {
-			let currentKing = update.king[ 0 ].name;
-
-			if ( currentKing !== lastKing.name ) {
-				lastKing.to = update.match.date;
-
-				if ( lastKing.name !== '' ) {
-					kingTimeline.push( lastKing );
-				}
-
-				lastKing = { from: update.match.date, name: currentKing, to: false }
-			}
-		}
-
-		const rankHistory = {
-			'@length': allUpdates.length
-		};
-
-		const records = {};
-
-		for ( let player of players ) {
-			rankHistory[ player.name ] = getRankHistory( allUpdates, player.name, true );
-			records[ player.name ] = getRecords( allUpdates, player.name );
-		}
-
-		const allRecords = { humiliations: {} };
-
-		const maxRecords = [
-			'gainRankOnLost', 'gainRankOnLostMax', 'looses', 'wins', 'pointsGain', 'lostRankOnWin', 'rankMax', 'seriesLooses', 'seriesWins',
-			'noRankChange'
-		];
-
-		for ( let record of maxRecords ) {
-			let recordMax = 0;
-			let holder = '';
-
-			for ( let player of players ) {
-				const playerRecord = records[ player.name ][ record ];
-
-				if ( playerRecord > recordMax ) {
-					holder = player.name;
-					recordMax = playerRecord;
-				} else if ( playerRecord === recordMax ) {
-					holder = holder + ', ' + player.name;
-				}
-			}
-
-			allRecords[ record ] = { record: recordMax, holder: holder };
-		}
-
-		for ( let record of [ 'wins', 'lost' ] ) {
-			let recordMax = 0;
-			let holder = '';
-
-			for ( let player of players ) {
-				const playerRecord = records[ player.name ][ 'humiliations' ][ record ];
-
-				if ( playerRecord > recordMax ) {
-					holder = player.name;
-					recordMax = playerRecord;
-				} else if ( playerRecord === recordMax ) {
-					holder = holder + ', ' + player.name;
-				}
-			}
-
-			allRecords.humiliations[ record ] = { record: recordMax, holder: holder };
-		}
-
-		for ( let record of [ 'lostRankOnWinMax', 'pointsLost', 'rankMin' ] ) {
-			let recordMin = 2000;
-			let holder = '';
-
-			for ( let player of players ) {
-				const playerRecord = records[ player.name ][ record ];
-
-				if ( playerRecord < recordMin ) {
-					holder = player.name;
-					recordMin = playerRecord;
-				} else if ( playerRecord === recordMin ) {
-					holder = holder + ', ' + player.name;
-				}
-			}
-
-			allRecords[ record ] = { record: recordMin, holder: holder };
-		}
+		const allUpdates = getAllUpdates( this.rank );
 
 		return {
-			rankHistory: rankHistory,
-			records: allRecords,
 			players: players,
-			kingTimeline: kingTimeline
+			rankHistory: calculateRankHistory( allUpdates, players ),
+			records: calculateRecords( allUpdates, players ),
+			kingTimeline: calculateKingTimeline( allUpdates )
 		}
 	}
+}
+
+function getAllUpdates( rank ) {
+	const allUpdates = [];
+
+	for ( let update of rank ) {
+		allUpdates.push( update );
+	}
+
+	return allUpdates;
 }
 
 function getRankChange( playerChange ) {
@@ -159,7 +70,7 @@ function getLastGames( allUpdates, player ) {
 	return lastGames;
 }
 
-function getRankHistory( allUpdates, player, includeOthers = false ) {
+function calculatePlayerRankHistory( allUpdates, player, includeOthers = false ) {
 	const rankHistory = [];
 
 	let lastPlayerScore = 2000;
@@ -293,6 +204,133 @@ function getPlayerChange( name, update ) {
 			return update[ key ];
 		}
 	}
+}
+
+function calculateKingTimeline( allUpdates ) {
+	const kingTimeline = [];
+
+	let lastKing = { from: false, to: false, name: '' };
+
+	for ( let update of allUpdates ) {
+		let currentKing = update.king;
+
+		if ( currentKing !== lastKing.name ) {
+			lastKing.to = update.match.date;
+
+			if ( lastKing.name !== '' ) {
+				if ( lastKing.name.indexOf( ',' ) !== -1 ) {
+					for ( let name of lastKing.name.split( ', ' ) ) {
+						let tmpKing = lastKing;
+						tmpKing.name = name;
+						kingTimeline.push( tmpKing );
+					}
+				} else {
+					kingTimeline.push( lastKing );
+				}
+			}
+
+			lastKing = { from: update.match.date, name: currentKing, to: false }
+		}
+	}
+
+	lastKing.to = new Date();
+	kingTimeline.push( lastKing );
+
+	const newKingTimeline = [];
+	let lastUpdate = {};
+
+	for ( let update of kingTimeline ) {
+		if ( lastUpdate.name === update.name ) {
+			lastUpdate.to = update.to;
+		} else {
+			if ( lastUpdate.name ) {
+				newKingTimeline.push( lastUpdate );
+			}
+			lastUpdate = update;
+		}
+	}
+	newKingTimeline.push( lastUpdate );
+	return newKingTimeline;
+}
+
+function calculateRecords( allUpdates, players ) {
+	const records = {};
+
+	for ( let player of players ) {
+		records[ player.name ] = getRecords( allUpdates, player.name );
+	}
+
+	const allRecords = { humiliations: {} };
+
+	const maxRecords = [
+		'gainRankOnLost', 'gainRankOnLostMax', 'looses', 'wins', 'pointsGain', 'lostRankOnWin', 'rankMax', 'seriesLooses', 'seriesWins',
+		'noRankChange'
+	];
+
+	for ( let record of maxRecords ) {
+		let recordMax = 0;
+		let holder = '';
+
+		for ( let player of players ) {
+			const playerRecord = records[ player.name ][ record ];
+
+			if ( playerRecord > recordMax ) {
+				holder = player.name;
+				recordMax = playerRecord;
+			} else if ( playerRecord === recordMax ) {
+				holder = holder + ', ' + player.name;
+			}
+		}
+
+		allRecords[ record ] = { record: recordMax, holder: holder };
+	}
+
+	for ( let record of [ 'wins', 'lost' ] ) {
+		let recordMax = 0;
+		let holder = '';
+
+		for ( let player of players ) {
+			const playerRecord = records[ player.name ][ 'humiliations' ][ record ];
+
+			if ( playerRecord > recordMax ) {
+				holder = player.name;
+				recordMax = playerRecord;
+			} else if ( playerRecord === recordMax ) {
+				holder = holder + ', ' + player.name;
+			}
+		}
+
+		allRecords.humiliations[ record ] = { record: recordMax, holder: holder };
+	}
+
+	for ( let record of [ 'lostRankOnWinMax', 'pointsLost', 'rankMin' ] ) {
+		let recordMin = 2000;
+		let holder = '';
+
+		for ( let player of players ) {
+			const playerRecord = records[ player.name ][ record ];
+
+			if ( playerRecord < recordMin ) {
+				holder = player.name;
+				recordMin = playerRecord;
+			} else if ( playerRecord === recordMin ) {
+				holder = holder + ', ' + player.name;
+			}
+		}
+
+		allRecords[ record ] = { record: recordMin, holder: holder };
+	}
+	return allRecords;
+}
+
+function calculateRankHistory( allUpdates, players ) {
+	const rankHistory = { '@length': allUpdates.length };
+
+	for ( let player of players ) {
+		rankHistory[ player.name ] = calculatePlayerRankHistory( allUpdates, player.name, true );
+	}
+
+	return rankHistory;
 }
 
 module.exports = Stats;

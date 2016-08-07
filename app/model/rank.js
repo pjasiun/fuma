@@ -146,7 +146,18 @@ class Rank {
 		for ( let i = 0; i < this.history.length; i++ ) {
 			const match = rankForUpdates.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
 
-			match.king = rankForUpdates.getPlayers( { rookies: true, oldBoys: true } );
+			const players = rankForUpdates.getPlayers( { rookies: true, oldBoys: true } );
+
+			let points = 0;
+
+			for ( let player of players ) {
+				if ( player.score > points ) {
+					match.king = player.name;
+					points = player.score;
+				} else if ( player.score === points ) {
+					match.king += ', ' + player.name;
+				}
+			}
 
 			yield match;
 		}

@@ -208,7 +208,8 @@ describe( 'Rank model', () => {
 				blue2: { name: 'd', newScore: 1995, oldScore: 2000 },
 				red1: { name: 'a', newScore: 2005, oldScore: 2000 },
 				red2: { name: 'b', newScore: 2005, oldScore: 2000 },
-				match: Match.createFromText( '@a @b 10 : 6 @c @d', 'Wed Feb 03 2016 10:02:30 GMT+0100 (CET)' )
+				match: Match.createFromText( '@a @b 10 : 6 @c @d', 'Wed Feb 03 2016 10:02:30 GMT+0100 (CET)' ),
+				king: 'a, b'
 			} );
 
 			expect( iterator.next().value ).to.deep.equal( {
@@ -216,7 +217,8 @@ describe( 'Rank model', () => {
 				blue2: { name: 'd', newScore: 1982, oldScore: 1995 },
 				red1: { name: 'c', newScore: 2008, oldScore: 1995 },
 				red2: { name: 'a', newScore: 2018, oldScore: 2005 },
-				match: Match.createFromText( '@c @a 10 : 2 @b @d', 'Wed Feb 03 2016 10:02:50 GMT+0100 (CET)' )
+				match: Match.createFromText( '@c @a 10 : 2 @b @d', 'Wed Feb 03 2016 10:02:50 GMT+0100 (CET)' ),
+				king: 'a'
 			} );
 
 			expect( iterator.next().value ).to.deep.equal( {
@@ -224,7 +226,8 @@ describe( 'Rank model', () => {
 				blue2: { name: 'd', newScore: 1978, oldScore: 1982 },
 				red1: { name: 'c', newScore: 2012, oldScore: 2008 },
 				red2: { name: 'a', newScore: 2022, oldScore: 2018 },
-				match: Match.createFromText( '@c @a 10 : 6 @b @d', 'Wed Feb 03 2016 10:03:21 GMT+0100 (CET)' )
+				match: Match.createFromText( '@c @a 10 : 6 @b @d', 'Wed Feb 03 2016 10:03:21 GMT+0100 (CET)' ),
+				king: 'a'
 			} );
 
 			expect( iterator.next().done ).to.be.true;

@@ -291,7 +291,7 @@ describe( 'Stats model', () => {
 			expect( stats.getFull().rankHistory ).to.have.property( 'd' );
 			expect( stats.getFull().rankHistory ).to.not.have.property( 'z' );
 
-			expect( stats.getFull().rankHistory.a ).to.have.length( 20 );
+			expect( stats.getFull().rankHistory.a ).to.have.length( 21 );
 			expect( stats.getFull().rankHistory.b ).to.have.length( 21 );
 			expect( stats.getFull().rankHistory.c ).to.have.length( 21 );
 			expect( stats.getFull().rankHistory.d ).to.have.length( 21 );
