@@ -141,10 +141,14 @@ class Rank {
 	}
 
 	*[ Symbol.iterator ]() {
-		const lolz = new Rank( this.history );
+		const rankForUpdates = new Rank( this.history );
 
 		for ( let i = 0; i < this.history.length; i++ ) {
-			yield lolz.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
+			const match = rankForUpdates.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
+
+			match.king = rankForUpdates.getPlayers( { rookies: true, oldBoys: true } );
+
+			yield match;
 		}
 	}
 }

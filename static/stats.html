@@ -32,6 +32,12 @@
 		</div>
 	</div>
 	<div class="row">
+		<div class="col-xs-12">
+			<h2>King history</h2>
+			<div id="kings" style="height:300px;"></div>
+		</div>
+	</div>
+	<div class="row">
 		<div class="col-xs-6">
 			<h2>Records</h2>
 			<div id="records"></div>
@@ -44,7 +50,7 @@
 </div>
 
 <script>
-	google.charts.load( 'current', { 'packages': [ 'corechart' ] } );
+	google.charts.load( 'current', { 'packages': [ 'corechart', 'timeline' ] } );
 	google.charts.setOnLoadCallback( showStats );
 
 	function showStats() {
@@ -55,8 +61,10 @@
 		} ).responseText;
 
 		var data = JSON.parse( responseText );
-		console.log( data );
+
 		drawRankHistoryChart( data.rankHistory );
+
+		drawKingTimeline( data.kingTimeline );
 
 		renderRecords( data.records );
 
@@ -116,6 +124,25 @@
 		var chart = new google.visualization.LineChart( document.getElementById( 'rank-history' ) );
 
 		chart.draw( data, options );
+	}
+
+	function drawKingTimeline( kings ) {
+		var data = new google.visualization.DataTable();
+
+		data.addColumn( { type: 'string', id: 'Name' } );
+		data.addColumn( { type: 'date', id: 'Start' } );
+		data.addColumn( { type: 'date', id: 'End' } );
+
+		var rows = [];
+
+		for ( var king of kings ) {
+			rows.push( [ king.name, new Date( king.from ), new Date( king.to ) ] );
+		}
+
+		data.addRows( rows );
+
+		var chart = new google.visualization.Timeline( document.getElementById( 'kings' ) );
+		chart.draw( data, {} );
 	}
 
 	function renderRecords( records ) {

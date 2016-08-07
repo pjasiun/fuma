@@ -29,6 +29,24 @@ class Stats {
 			allUpdates.push( update );
 		}
 
+		const kingTimeline = [];
+
+		let lastKing = { from: false, to: false, name: '' };
+
+		for ( let update of allUpdates ) {
+			let currentKing = update.king[ 0 ].name;
+
+			if ( currentKing !== lastKing.name ) {
+				lastKing.to = update.match.date;
+
+				if ( lastKing.name !== '' ) {
+					kingTimeline.push( lastKing );
+				}
+
+				lastKing = { from: update.match.date, name: currentKing, to: false }
+			}
+		}
+
 		const rankHistory = {
 			'@length': allUpdates.length
 		};
@@ -104,7 +122,8 @@ class Stats {
 		return {
 			rankHistory: rankHistory,
 			records: allRecords,
-			players: players
+			players: players,
+			kingTimeline: kingTimeline
 		}
 	}
 }
