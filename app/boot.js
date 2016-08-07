@@ -51,7 +51,25 @@ const server = http.createServer( function( request, response ) {
 
 		response.writeHead( 200, { 'Content-Type': 'application/json' } );
 
-		response.end( JSON.stringify( stats.getPlayerStats( query.player ) ) );
+		response.end( JSON.stringify( query.player ? stats.getPlayerStats( query.player ) : stats.getFull() ) );
+
+		return;
+	}
+
+	if ( request.url.indexOf( '/stats?' ) === 0 ) {
+		fs.readFile( './static/player-stats.html', ( error, data ) => {
+			if ( error ) {
+				response.writeHead( 500, { 'Content-Type': 'text/plain' } );
+				response.write( error + '\n' );
+				response.end();
+
+				return;
+			}
+
+			response.writeHead( 200 );
+			response.write( data, 'binary' );
+			response.end();
+		} );
 
 		return;
 	}

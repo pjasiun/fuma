@@ -20,6 +20,93 @@ class Stats {
 			records: getRecords( allUpdates, player )
 		}
 	}
+
+	getFull() {
+		const players = this.rank.getPlayers();
+		const allUpdates = [];
+
+		for ( let update of this.rank ) {
+			allUpdates.push( update );
+		}
+
+		const rankHistory = {
+			'@length': allUpdates.length
+		};
+
+		const records = {};
+
+		for ( let player of players ) {
+			rankHistory[ player.name ] = getRankHistory( allUpdates, player.name, true );
+			records[ player.name ] = getRecords( allUpdates, player.name );
+		}
+
+		const allRecords = { humiliations: {} };
+
+		const maxRecords = [
+			'gainRankOnLost', 'gainRankOnLostMax', 'looses', 'wins', 'pointsGain', 'lostRankOnWin', 'rankMax', 'seriesLooses', 'seriesWins',
+			'noRankChange'
+		];
+
+		for ( let record of maxRecords ) {
+			let recordMax = 0;
+			let holder = '';
+
+			for ( let player of players ) {
+				const playerRecord = records[ player.name ][ record ];
+
+				if ( playerRecord > recordMax ) {
+					holder = player.name;
+					recordMax = playerRecord;
+				} else if ( playerRecord === recordMax ) {
+					holder = holder + ', ' + player.name;
+				}
+			}
+
+			allRecords[ record ] = { record: recordMax, holder: holder };
+		}
+
+		for ( let record of [ 'wins', 'lost' ] ) {
+			let recordMax = 0;
+			let holder = '';
+
+			for ( let player of players ) {
+				const playerRecord = records[ player.name ][ 'humiliations' ][ record ];
+
+				if ( playerRecord > recordMax ) {
+					holder = player.name;
+					recordMax = playerRecord;
+				} else if ( playerRecord === recordMax ) {
+					holder = holder + ', ' + player.name;
+				}
+			}
+
+			allRecords.humiliations[ record ] = { record: recordMax, holder: holder };
+		}
+
+		for ( let record of [ 'lostRankOnWinMax', 'pointsLost', 'rankMin' ] ) {
+			let recordMin = 2000;
+			let holder = '';
+
+			for ( let player of players ) {
+				const playerRecord = records[ player.name ][ record ];
+
+				if ( playerRecord < recordMin ) {
+					holder = player.name;
+					recordMin = playerRecord;
+				} else if ( playerRecord === recordMin ) {
+					holder = holder + ', ' + player.name;
+				}
+			}
+
+			allRecords[ record ] = { record: recordMin, holder: holder };
+		}
+
+		return {
+			rankHistory: rankHistory,
+			records: allRecords,
+			players: players
+		}
+	}
 }
 
 function getRankChange( playerChange ) {
@@ -53,13 +140,19 @@ function getLastGames( allUpdates, player ) {
 	return lastGames;
 }
 
-function getRankHistory( allUpdates, player ) {
+function getRankHistory( allUpdates, player, includeOthers = false ) {
 	const rankHistory = [];
+
+	let lastPlayerScore = 2000;
+
 	for ( let update of allUpdates ) {
 		const playerChange = getPlayerChange( player, update );
 
 		if ( playerChange ) {
 			rankHistory.push( [ update.match.date, playerChange.newScore ] )
+			lastPlayerScore = playerChange.newScore;
+		} else if ( includeOthers ) {
+			rankHistory.push( [ update.match.date, lastPlayerScore ] )
 		}
 	}
 
