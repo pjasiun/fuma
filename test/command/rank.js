@@ -1,5 +1,7 @@
 const expect = require( 'chai' ).expect;
 
+const makeRequest = require( './../utils/makeRequest' );
+
 const Table = require( 'cli-table' );
 const moment = require( 'moment' );
 
@@ -122,13 +124,4 @@ describe( 'Rank command', () => {
 			.to.have.property( 'text' )
 			.that.equals( 'No players in the rank.' );
 	} );
-
-	function makeRequest( command ) {
-		return {
-			text: command,
-			resolvedText: command,
-			user_name: 'jodator',
-			response_url: 'just test'
-		};
-	}
 } );

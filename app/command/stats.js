@@ -6,7 +6,7 @@ class Stats {
 	}
 
 	handleRequest( request ) {
-		if ( request.text != 'stats' ) {
+		if ( request.resolvedText != 'stats' ) {
 			return;
 		}
 
