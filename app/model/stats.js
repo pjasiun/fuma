@@ -70,7 +70,7 @@ function getLastGames( allUpdates, player ) {
 	return lastGames;
 }
 
-function calculatePlayerRankHistory( allUpdates, player, includeOthers = false ) {
+function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 	const rankHistory = [];
 
 	let lastPlayerScore = 2000;
