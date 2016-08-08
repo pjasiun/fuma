@@ -60,7 +60,7 @@ const server = http.createServer( function( request, response ) {
 	}
 
 	if ( request.url.indexOf( '/stats?' ) === 0 ) {
-		fs.readFile( './static/player-stats.html', ( error, data ) => {
+		fs.readFile( './app/static/player-stats.html', ( error, data ) => {
 			if ( error ) {
 				response.writeHead( 500, { 'Content-Type': 'text/plain' } );
 				response.write( error + '\n' );
@@ -78,7 +78,7 @@ const server = http.createServer( function( request, response ) {
 	}
 
 	if ( request.url.indexOf( '/stats' ) === 0 ) {
-		fs.readFile( './static/stats.html', ( error, data ) => {
+		fs.readFile( './app/static/stats.html', ( error, data ) => {
 			if ( error ) {
 				response.writeHead( 500, { 'Content-Type': 'text/plain' } );
 				response.write( error + '\n' );
