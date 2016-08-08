@@ -12,7 +12,8 @@ class Stats {
 			name: player,
 			rankHistory: calculatePlayerRankHistory( allUpdates, player ),
 			lastGames: getLastGames( allUpdates, player ),
-			records: getRecords( allUpdates, player )
+			records: getRecords( allUpdates, player ),
+			teams: getPlayerTeams( allUpdates, player )
 		}
 	}
 
@@ -331,6 +332,89 @@ function calculateRankHistory( allUpdates, players ) {
 	}
 
 	return rankHistory;
+}
+
+function getPlayerTeams( allUpdates, player ) {
+	const teams = {
+		teamMates: {},
+		opponents: {}
+	};
+
+	for ( let update of allUpdates ) {
+		const playerChange = getPlayerChange( player, update );
+
+		const playerWon = isWin( player, update );
+		if ( playerChange ) {
+			const rankChange = getRankChange( playerChange );
+
+			if ( update.red1.name === player ) {
+				addTeamStats( update.red2, [ update.blue1, update.blue2 ], playerWon, rankChange );
+			}
+
+			if ( update.red2.name === player ) {
+				addTeamStats( update.red1, [ update.blue1, update.blue2 ], playerWon, rankChange );
+			}
+
+			if ( update.blue1.name === player ) {
+				addTeamStats( update.blue2, [ update.red1, update.red2 ], playerWon, rankChange );
+			}
+
+			if ( update.blue2.name === player ) {
+				addTeamStats( update.blue1, [ update.red1, update.red2 ], playerWon, rankChange );
+			}
+		}
+	}
+
+	teams.teamMates = updateStats( teams.teamMates );
+	teams.opponents = updateStats( teams.opponents );
+
+	function updateStats( players ) {
+		const output = [];
+
+		for ( let player of Object.keys( players ) ) {
+			const playerData = players[ player ];
+
+			output.push( {
+				name: player,
+				wins: playerData.wins,
+				games: playerData.games,
+				looses: playerData.games - playerData.wins,
+				winRatio: playerData.wins / playerData.games,
+				rankChangeTotal: playerData.rankChangeTotal,
+				rankChangeAvg: playerData.rankChangeTotal / playerData.games
+			} );
+		}
+
+		return output.sort( ( playerA, playerB ) => playerB.games - playerA.games );
+	}
+
+	function addTeamStats( teamMate, opponents, playerWon, rankChange ) {
+		if ( !teams.teamMates[ teamMate.name ] ) {
+			teams.teamMates[ teamMate.name ] = { games: 0, wins: 0, rankChangeTotal: 0 };
+		}
+
+		teams.teamMates[ teamMate.name ].games += 1;
+		teams.teamMates[ teamMate.name ].rankChangeTotal += rankChange;
+
+		if ( playerWon ) {
+			teams.teamMates[ teamMate.name ].wins += 1;
+		}
+
+		for ( let opponent of opponents ) {
+			if ( !teams.opponents[ opponent.name ] ) {
+				teams.opponents[ opponent.name ] = { games: 0, wins: 0, rankChangeTotal: 0 };
+			}
+
+			teams.opponents[ opponent.name ].games += 1;
+			teams.opponents[ opponent.name ].rankChangeTotal += rankChange;
+
+			if ( playerWon ) {
+				teams.opponents[ opponent.name ].wins += 1;
+			}
+		}
+	}
+
+	return teams;
 }
 
 module.exports = Stats;

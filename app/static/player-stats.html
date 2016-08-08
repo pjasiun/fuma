@@ -47,6 +47,18 @@
 			<div id="records"></div>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-xs-6">
+			<h2>Team mates</h2>
+			<div id="team-mates"></div>
+			<p class="text-muted">Minimum 10 games</p>
+		</div>
+		<div class="col-xs-6">
+			<h2>Opponents</h2>
+			<div id="opponents"></div>
+			<p class="text-muted">Minimum 10 games</p>
+		</div>
+	</div>
 </div>
 
 <script>
@@ -75,6 +87,16 @@
 		renderLastGames( data.lastGames, player );
 
 		renderRecords( data.records, player );
+
+		renderTeamMates( addTeamMatesMedals( filterMinGames( data.teams.teamMates, 10 ) ), '#team-mates', 'teamMates' );
+
+		renderTeamMates( addTeamMatesMedals( filterMinGames( data.teams.opponents, 10 ) ), '#opponents', 'opponents' );
+	}
+
+	function filterMinGames( players, minGames ) {
+		return players.filter( function( player ) {
+			return player.games >= minGames;
+		} );
 	}
 
 	function renderRecords( records, player ) {
@@ -222,6 +244,147 @@
 		}
 
 		return options[ 1 ];
+	}
+
+	function renderTeamMates( players, renderTo, medals ) {
+		var table = jQuery( '<table class="table table-striped table-condensed">' );
+
+		var thead = jQuery( '<thead>' );
+		var headRow = jQuery( '<tr>' );
+		headRow.append( jQuery( '<th>' ).html( 'player' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'games' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'wins' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'looses' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'rank total' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'rank avg' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'win ratio' ) );
+
+		thead.append( headRow );
+		table.append( thead );
+
+		var tbody = jQuery( '<tbody>' );
+
+		for ( var player of players ) {
+			var row = jQuery( '<tr>' );
+
+			if ( player.winRatio >= 0.5 ) {
+				row.addClass( 'success' );
+			} else {
+				row.addClass( 'danger' );
+			}
+
+			row.append( jQuery( '<td>' ).html( player.name + renderMedals( player.medals, medals ) ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.games ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.wins ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.looses ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.rankChangeTotal ) );
+			row.append( jQuery( '<td class="text-right">' ).html( parseFloat( player.rankChangeAvg ).toFixed( 2 ) ) );
+			row.append( jQuery( '<td class="text-right">' ).html( parseInt( player.winRatio * 100 ) + '%' ) );
+
+			tbody.append( row );
+		}
+
+		table.append( tbody );
+
+		table.appendTo( renderTo );
+	}
+
+	var medalsDef = {
+		teamMates: {
+			bestWinRatio: { title: 'We rock', icon: '🤘' },
+			worstWinRatio: { title: 'We\'re doomed', icon: '😭' },
+			mostRank: { title: 'Gold digger', icon: '⚒' },
+			mostRankAvg: { title: 'Going shopping', icon: '🛍' },
+			mostGames: { title: 'Always together', icon: '💗' },
+			zero: { title: 'Sup...', icon: '💤' }
+		},
+		opponents: {
+			bestWinRatio: { title: 'Happy to see you!', icon: '😂' },
+			worstWinRatio: { title: 'Gonna poop', icon: '💩' },
+			mostRank: { title: 'Money bag', icon: '💰' },
+			mostRankAvg: { title: 'Gimme more', icon: '💸' },
+			mostGames: { title: 'Oh, you again...', icon: '😒' },
+			zero: { title: 'Maybe next time', icon: '☯' }
+		}
+	};
+
+	function renderMedals( medals, collection ) {
+		if ( medals.length === 0 ) {
+			return '';
+		}
+
+		var out = ' (';
+
+		for ( var medal of medals ) {
+			out += renderMedal( medalsDef[ collection ][ medal ] );
+		}
+
+		function renderMedal( definition ) {
+			return '<span title="' + definition.title + '">' + definition.icon + '</span>'
+		}
+
+		return out + ')';
+	}
+
+	function addTeamMatesMedals( players ) {
+		var bestWinRatio = 0;
+		var mostGames = 0;
+		var worstWinRatio = 100;
+		var mostRank = 0;
+		var mostRankAvg = 0;
+
+		var player;
+
+		for ( player of players ) {
+			if ( player.winRatio > bestWinRatio ) {
+				bestWinRatio = player.winRatio;
+			}
+
+			if ( player.winRatio < worstWinRatio ) {
+				worstWinRatio = player.winRatio;
+			}
+
+			if ( player.games > mostGames ) {
+				mostGames = player.games;
+			}
+
+			if ( player.rankChangeTotal > mostRank ) {
+				mostRank = player.rankChangeTotal;
+			}
+
+			if ( player.rankChangeAvg > mostRankAvg ) {
+				mostRankAvg = player.rankChangeAvg;
+			}
+
+			player.medals = [];
+		}
+
+		for ( player of players ) {
+			if ( player.winRatio === bestWinRatio ) {
+				player.medals.push( 'bestWinRatio' );
+			}
+
+			if ( player.winRatio === worstWinRatio ) {
+				player.medals.push( 'worstWinRatio' );
+			}
+
+			if ( player.games === mostGames ) {
+				player.medals.push( 'mostGames' );
+			}
+			if ( player.rankChangeTotal === mostRank ) {
+				player.medals.push( 'mostRank' );
+			}
+
+			if ( player.rankChangeAvg === mostRankAvg ) {
+				player.medals.push( 'mostRankAvg' );
+			}
+
+			if ( player.rankChangeTotal === 0 ) {
+				player.medals.push( 'zero' );
+			}
+		}
+
+		return players;
 	}
 </script>
 
