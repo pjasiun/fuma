@@ -27,7 +27,8 @@ class Result {
 			[ 'public history', 'print the history on the channel,\nmay be used with every command' ],
 			[ 'set alias A @aaaa', 'set alias, note that alias name\nhave to be all upper case' ],
 			[ 'delete alias A', 'delete alias' ],
-			[ 'aliases', 'list aliases' ]
+			[ 'aliases', 'list aliases' ],
+			[ 'stats', 'show ranking statistics' ]
 		);
 
 		for ( let i = 0; i < table.length; i++ ) {
