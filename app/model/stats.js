@@ -150,6 +150,11 @@ function getRecords( allUpdates, player ) {
 					max.lostRankOnWinMax = rankChange;
 				}
 			}
+
+			if ( rankChange > max.pointsGain ) {
+				max.pointsGain = rankChange;
+				max.pointsGainMatch = getGameData( update, change, player );
+			}
 		} else {
 			currentLosses += 1;
 			currentWins = 0;
@@ -171,20 +176,15 @@ function getRecords( allUpdates, player ) {
 					max.gainRankOnLostMax = rankChange;
 				}
 			}
+
+			if ( rankChange < max.pointsLost ) {
+				max.pointsLost = rankChange;
+				max.pointsLostMatch = getGameData( update, change, player );
+			}
 		}
 
 		if ( rankChange === 0 ) {
 			max.noRankChange += 1;
-		}
-
-		if ( rankChange < max.pointsLost ) {
-			max.pointsLost = rankChange;
-			max.pointsLostMatch = getGameData( update, change, player );
-		}
-
-		if ( rankChange > max.pointsGain ) {
-			max.pointsGain = rankChange;
-			max.pointsGainMatch = getGameData( update, change, player );
 		}
 	}
 
