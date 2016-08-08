@@ -7,6 +7,8 @@ const Registration = require( '../../app/command/registration' );
 describe( 'Registration command', () => {
 	'use strict';
 
+	const timeToLive = 50;
+
 	let registrationCommand;
 
 	beforeEach( () => {
@@ -19,8 +21,7 @@ describe( 'Registration command', () => {
 					return { blue: 10, red: 10 };
 				}
 			}
-		} );
-
+		}, timeToLive );
 	} );
 
 	it( 'should return undefined for wrong command', () => {
@@ -104,9 +105,10 @@ describe( 'Registration command', () => {
 		it( 'should start match for 4 users', () => {
 			const asyncResponses = [];
 
-			const response = registrationCommand.handleRequest( makeRequest( '+ @pjasiun @fredck @scofalik @lolz' ), ( uri, text ) => {
-				asyncResponses.push( text );
-			} );
+			const response = registrationCommand.handleRequest(
+				makeRequest( '+ @pjasiun @fredck @scofalik @lolz' ),
+				( uri, text ) => asyncResponses.push( text )
+			);
 
 			expect( response ).to.not.be.null;
 			expect( response ).to.deep.equal( {
@@ -164,6 +166,33 @@ describe( 'Registration command', () => {
 				'response_type': 'ephemeral',
 				'text': '@jodator have been added to the next match.'
 			} );
+		} );
+
+		it( 'should remove players that register later then defined time', ( done ) => {
+			const asyncResponses = [];
+
+			const response = registrationCommand.handleRequest( makeRequest( '+' ), ( uri, text ) => asyncResponses.push( text ) );
+
+			expect( response ).to.not.be.null;
+			expect( response ).to.deep.equal( {
+				'response_type': 'ephemeral',
+				'text': '@jodator have been added to the next match.'
+			} );
+
+			setTimeout( () => {
+				const response = registrationCommand.handleRequest( makeRequest( '+ @pjasiun' ), ( uri, text ) => asyncResponses.push( text ) );
+
+				expect( response ).to.not.be.null;
+				expect( response ).to.deep.equal( { 'response_type': 'ephemeral', 'text': '@pjasiun have been added to the next match.' } );
+
+				expect( asyncResponses ).to.have.length( 3 );
+
+				expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *3*!' ) ).to.be.greaterThan( -1 );
+				expect( asyncResponses.indexOf( 'Old users were removed from queue.' ) ).to.be.greaterThan( -1 );
+				expect( asyncResponses.indexOf( 'A new player joined the next match! Waiting for the next *2*!' ) ).to.be.equal( -1 );
+
+				done();
+			}, timeToLive * 2 );
 		} );
 	} );
 

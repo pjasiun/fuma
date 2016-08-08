@@ -3,12 +3,18 @@
 const registrationRegExp = /^(\+|-)\s*((\s*@[\S]+)*)$/;
 
 class Registration {
-	constructor( context ) {
+	constructor( context, timeToLive ) {
+		// Default time to live is 5 hrs
+		this.timeToLive = timeToLive ? timeToLive : 8 * 60 * 60 * 1000;
 		this.context = context;
 		this.registered = [];
 	}
 
 	handleRequest( request, asyncResponse ) {
+		if ( this.cleanRegistered() ) {
+			asyncResponse( request.response_url, 'Old users were removed from queue.' );
+		}
+
 		const registered = this.registered;
 		const registrationValues = registrationRegExp.exec( request.resolvedText );
 		const context = this.context;
@@ -35,23 +41,22 @@ class Registration {
 			}
 		}
 
+		const usersMessage = ( users.map( user => '@' + user ).join( ', ' ) );
+
 		return {
 			'response_type': 'ephemeral',
-			'text': ( users.map( user => '@' + user ).join( ', ' ) ) +
-			' have been ' +
-			( isAdd ? 'added to' : 'removed from' ) +
-			' the next match.'
+			'text': `${usersMessage} have been ${( isAdd ? 'added to' : 'removed from' )} the next match.`
 		};
 
 		function add( user ) {
 			// Add the player only if he/she is not registered already.
 			// We could return if user in in registered pool already but it could be abused to check if someone else is already registered.
-			if ( registered.indexOf( user ) !== -1 ) {
+			if ( hasUser( registered, user ) ) {
 				asyncResponse( request.response_url, 'Oops! Some users already registered and will not be re-added!', 'ephemeral' );
 				return;
 			}
 
-			registered.push( user );
+			registered.push( { name: user, date: new Date() } );
 
 			const playersCount = registered.length % 4;
 
@@ -60,27 +65,44 @@ class Registration {
 					'Waiting for the next *' + ( 4 - playersCount ) + '*!' );
 			} else {
 				const players = registered.splice( -4 );
-				players.sort( ( playerA, playerB ) => context.rank.getPlayer( playerA ).score - context.rank.getPlayer( playerB ).score );
+				players.sort( ( playerA, playerB ) => context.rank.getPlayer( playerA.name ).score -
+				context.rank.getPlayer( playerB.name ).score );
 				const expected = context.rank.getExpected( players[ 0 ], players[ 3 ], players[ 1 ], players[ 2 ] );
 
-				asyncResponse( request.response_url, ':fire: @' + players[ 0 ] + ' @' + players[ 3 ] +
+				asyncResponse( request.response_url, ':fire: @' + players[ 0 ].name + ' @' + players[ 3 ].name +
 					' (' + expected.red + ' : ' + expected.blue + ')' +
-					' @' + players[ 1 ] + ' @' + players[ 2 ] );
+					' @' + players[ 1 ].name + ' @' + players[ 2 ].name );
 			}
 		}
 
 		function remove( user ) {
-			const index = registered.lastIndexOf( user );
+			const index = registered.map( ( registeredUser ) => registeredUser.name ).lastIndexOf( user );
 
 			if ( index > -1 ) {
 				registered.splice( index, 1 );
 
-				let players = registered.length % 4;
+				const playersCount = registered.length % 4;
 
 				asyncResponse( request.response_url, 'User removed from the match. :chicken: ' +
-					'Now we need ' + ( 4 - players ) + ' players.' );
+					'Now we need ' + ( 4 - playersCount ) + ' players.' );
 			}
 		}
+
+		function hasUser( registered, user ) {
+			return registered.map( ( registeredUser ) => registeredUser.name ).indexOf( user ) !== -1;
+		}
+	}
+
+	cleanRegistered() {
+		const now = new Date();
+
+		const registeredBefore = this.registered.length;
+
+		this.registered = this.registered.filter( ( registeredUser ) => {
+			return ( now.getTime() - registeredUser.date.getTime() ) < this.timeToLive;
+		} );
+
+		return this.registered.length !== registeredBefore;
 	}
 }
 
