@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Stats</title>
+
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+		  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+		  integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+			integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+			crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+	<script src="http://momentjs.com/downloads/moment.js"></script>
+</head>
+<body>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-12">
+			<h2>Rank history</h2>
+			<div id="rank-history" style="height: 800px;"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<h2>King history</h2>
+			<div id="kings" style="height:300px;"></div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-6">
+			<h2>Records</h2>
+			<div id="records"></div>
+		</div>
+		<div class="col-xs-6">
+			<h2>Ranking</h2>
+			<div id="ranking"></div>
+		</div>
+	</div>
+</div>
+
+<script>
+	google.charts.load( 'current', { 'packages': [ 'corechart', 'timeline' ] } );
+	google.charts.setOnLoadCallback( showStats );
+
+	function showStats() {
+		var responseText = jQuery.ajax( {
+			url: '/stats/get',
+			dataType: 'json',
+			async: false
+		} ).responseText;
+
+		var data = JSON.parse( responseText );
+
+		drawRankHistoryChart( data.rankHistory );
+
+		drawKingTimeline( data.kingTimeline );
+
+		renderRecords( data.records );
+
+		renderRanking( data.players );
+	}
+
+	function drawRankHistoryChart( history ) {
+		var data = new google.visualization.DataTable();
+		var players = Object.keys( history ).filter( ( key ) => key !== '@length' );
+
+		data.addColumn( 'number', 'Game' );
+		for ( var player of players ) {
+			data.addColumn( 'number', player );
+		}
+
+		let game = 1;
+
+		var historyUpdates = [];
+
+		for ( let i = 0; i < history[ '@length' ]; i++ ) {
+			var rankUpdate = [ game++ ];
+
+			for ( var rankPlayer of players ) {
+				rankUpdate.push( history[ rankPlayer ][ i ][ 1 ] );
+			}
+
+			historyUpdates.push( rankUpdate );
+		}
+
+		data.addRows( historyUpdates );
+
+		const hTicks = [];
+
+		for ( var tick = 0; tick < historyUpdates.length; tick += 50 ) {
+			hTicks.push( tick );
+		}
+
+		var options = {
+			curveType: 'none',
+			lineWidth: 1,
+			theme: 'maximized',
+			vAxis: {
+				title: 'Rank',
+				baseline: 2000,
+				baselineColor: 'black',
+				viewWindowMode: 'maximized',
+				ticks: [ 1850, 1900, 1950, 2000, 2050, 2100, 2150, 2200, 2250, 2300 ],
+				minorGridlines: { count: 4 }
+			},
+			hAxis: {
+				title: 'Game',
+				ticks: hTicks,
+				minorGridlines: { count: 4 }
+			}
+		};
+
+		var chart = new google.visualization.LineChart( document.getElementById( 'rank-history' ) );
+
+		chart.draw( data, options );
+	}
+
+	function drawKingTimeline( kings ) {
+		var data = new google.visualization.DataTable();
+
+		data.addColumn( { type: 'string', id: 'Name' } );
+		data.addColumn( { type: 'date', id: 'Start' } );
+		data.addColumn( { type: 'date', id: 'End' } );
+
+		var rows = [];
+
+		for ( var king of kings ) {
+			rows.push( [ king.name, new Date( king.from ), new Date( king.to ) ] );
+		}
+
+		data.addRows( rows );
+
+		var chart = new google.visualization.Timeline( document.getElementById( 'kings' ) );
+		chart.draw( data, {} );
+	}
+
+	function renderRecords( records ) {
+		var table = jQuery( '<table class="table table-striped table-condensed">' );
+		var tbody = jQuery( '<tbody>' );
+
+		const thead = jQuery( '<thead>' );
+
+		const theadRow = jQuery( '<tr>' );
+		theadRow.append( jQuery( '<th>' ).html( 'Record' ) );
+		theadRow.append( jQuery( '<th>' ).html( 'Value' ) );
+		theadRow.append( jQuery( '<th>' ).html( 'Holder' ) );
+		thead.append( theadRow );
+
+		table.append( thead );
+		table.append( tbody );
+
+		makeRow( 'Humiliations', records.humiliations.wins );
+		makeRow( 'Humiliated', records.humiliations.lost );
+		makeRow( 'Pointless games', records.noRankChange );
+		makeRow( 'Wins total', records.wins );
+		makeRow( 'Loses total', records.looses );
+		makeRow( 'Rank Gain on Lost (games)', records.gainRankOnLost );
+		makeRow( 'Rank Gain on Lost (max)', records.gainRankOnLostMax );
+		makeRow( 'Rank Lost on Win (games)', records.lostRankOnWin );
+		makeRow( 'Rank Lost on Win (max)', records.lostRankOnWinMax );
+		makeRow( 'Max rank gain', records.pointsGain );
+		makeRow( 'Max rank lost', records.pointsLost );
+		makeRow( 'Wins series', records.seriesWins );
+		makeRow( 'Loses series', records.seriesLooses );
+		makeRow( 'Max rank', records.rankMax );
+		makeRow( 'Min rank', records.rankMin );
+
+		function makeRow( title, data ) {
+			var row = jQuery( '<tr>' );
+			row.append( jQuery( '<td>' ).html( title ) );
+			row.append( jQuery( '<td class="text-right">' ).html( data.record ) );
+			row.append( jQuery( '<td>' ).html( data.holder ) );
+
+			tbody.append( row );
+		}
+
+		table.appendTo( '#records' );
+	}
+
+	function renderRanking( players ) {
+		var table = jQuery( '<table class="table table-striped table-condensed">' );
+
+		const thead = jQuery( '<thead>' );
+		const theadRow = jQuery( '<tr>' );
+		theadRow.append( jQuery( '<th>' ).html( 'Player' ) );
+		theadRow.append( jQuery( '<th>' ).html( 'Score' ) );
+		theadRow.append( jQuery( '<th>' ).html( 'Matches' ) );
+		theadRow.append( jQuery( '<th>' ).html( 'Last game' ) );
+		thead.append( theadRow );
+
+		table.append( thead );
+
+		var tbody = jQuery( '<tbody>' );
+
+		table.append( tbody );
+
+		for ( var player of players ) {
+			var row = jQuery( '<tr>' );
+
+			row.append( jQuery( '<td>' ).html( '<a href="?player=' + player.name + '">' + player.name + '</a>' ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.score ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.matches ) );
+			row.append( jQuery( '<td>' ).html( moment( player.lastGame ).fromNow() ) );
+
+			tbody.append( row );
+		}
+
+		table.appendTo( '#ranking' );
+	}
+</script>
+
+</body>
+</html>

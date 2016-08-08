@@ -1,11 +1,11 @@
 const expect = require( 'chai' ).expect;
 
+const makeRequest = require( './../utils/makeRequest' );
+
 const Registration = require( '../../app/command/registration' );
 
 describe( 'Registration command', () => {
 	'use strict';
-
-	const responseUri = 'just test';
 
 	let registrationCommand;
 
@@ -39,7 +39,6 @@ describe( 'Registration command', () => {
 	describe( '+', () => {
 		it( 'should add current user', () => {
 			const response = registrationCommand.handleRequest( makeRequest( '+' ), ( uri, text ) => {
-				expect( uri ).to.equal( responseUri );
 				expect( text ).to.equal( 'A new player joined the next match! Waiting for the next *3*!' );
 			} );
 
@@ -52,7 +51,6 @@ describe( 'Registration command', () => {
 
 		it( 'should add other user', () => {
 			const response = registrationCommand.handleRequest( makeRequest( '+ @pjasiun' ), ( uri, text ) => {
-				expect( uri ).to.equal( responseUri );
 				expect( text ).to.equal( 'A new player joined the next match! Waiting for the next *3*!' );
 			} );
 
@@ -158,7 +156,6 @@ describe( 'Registration command', () => {
 			} );
 
 			const response = registrationCommand.handleRequest( makeRequest( '+' ), ( uri, text ) => {
-				expect( uri ).to.equal( responseUri );
 				expect( text ).to.equal( 'Oops! Some users already registered and will not be re-added!' );
 			} );
 
@@ -188,7 +185,6 @@ describe( 'Registration command', () => {
 			} );
 
 			const response = registrationCommand.handleRequest( makeRequest( '-' ), ( uri, text ) => {
-				expect( uri ).to.equal( responseUri );
 				expect( text ).to.equal( 'User removed from the match. :chicken: Now we need 4 players.' );
 			} );
 
@@ -203,7 +199,6 @@ describe( 'Registration command', () => {
 			registrationCommand.handleRequest( makeRequest( '+ @pjasiun' ), ( uri, text ) => {
 			} );
 			const response = registrationCommand.handleRequest( makeRequest( '- @pjasiun' ), ( uri, text ) => {
-				expect( uri ).to.equal( responseUri );
 				expect( text ).to.equal( 'User removed from the match. :chicken: Now we need 4 players.' );
 			} );
 
@@ -284,12 +279,4 @@ describe( 'Registration command', () => {
 			expect( fistUserResponsesCount ).to.equal( 2 );
 		} );
 	} );
-
-	function makeRequest( command ) {
-		return {
-			resolvedText: command,
-			user_name: 'jodator',
-			response_url: responseUri
-		};
-	}
 } );
