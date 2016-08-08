@@ -154,7 +154,6 @@ function getRecords( allUpdates, player ) {
 			if ( rankChange > max.pointsGain ) {
 				max.pointsGain = rankChange;
 				max.pointsGainMatch = getGameData( update, change, player );
-				console.log( max.pointsGain, max.pointsGainMatch );
 			}
 		} else {
 			currentLosses += 1;
