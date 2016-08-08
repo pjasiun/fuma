@@ -153,8 +153,8 @@
 
 		const theadRow = jQuery( '<tr>' );
 		theadRow.append( jQuery( '<th>' ).html( 'Record' ) );
-		theadRow.append( jQuery( '<th>' ).html( 'Value' ) );
-		theadRow.append( jQuery( '<th>' ).html( 'Holder' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Value' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Holder' ) );
 		thead.append( theadRow );
 
 		table.append( thead );
@@ -165,9 +165,9 @@
 		makeRow( 'Pointless games', records.noRankChange );
 		makeRow( 'Wins total', records.wins );
 		makeRow( 'Loses total', records.looses );
-		makeRow( 'Rank Gain on Lost (games)', records.gainRankOnLost );
+		makeRow( 'Rank Gain on Lost (number of games)', records.gainRankOnLost );
 		makeRow( 'Rank Gain on Lost (max)', records.gainRankOnLostMax );
-		makeRow( 'Rank Lost on Win (games)', records.lostRankOnWin );
+		makeRow( 'Rank Lost on Win (number of games)', records.lostRankOnWin );
 		makeRow( 'Rank Lost on Win (max)', records.lostRankOnWinMax );
 		makeRow( 'Max rank gain', records.pointsGain );
 		makeRow( 'Max rank lost', records.pointsLost );
@@ -180,7 +180,7 @@
 			var row = jQuery( '<tr>' );
 			row.append( jQuery( '<td>' ).html( title ) );
 			row.append( jQuery( '<td class="text-right">' ).html( data.record ) );
-			row.append( jQuery( '<td>' ).html( data.holder ) );
+			row.append( jQuery( '<td class="text-right">' ).html( data.holder ) );
 
 			tbody.append( row );
 		}
@@ -194,9 +194,9 @@
 		const thead = jQuery( '<thead>' );
 		const theadRow = jQuery( '<tr>' );
 		theadRow.append( jQuery( '<th>' ).html( 'Player' ) );
-		theadRow.append( jQuery( '<th>' ).html( 'Score' ) );
-		theadRow.append( jQuery( '<th>' ).html( 'Matches' ) );
-		theadRow.append( jQuery( '<th>' ).html( 'Last game' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Score' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Matches' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Last game' ) );
 		thead.append( theadRow );
 
 		table.append( thead );
@@ -211,7 +211,7 @@
 			row.append( jQuery( '<td>' ).html( '<a href="?player=' + player.name + '">' + player.name + '</a>' ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.score ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.matches ) );
-			row.append( jQuery( '<td>' ).html( moment( player.lastGame ).fromNow() ) );
+			row.append( jQuery( '<td class="text-right">' ).html( moment( player.lastGame ).fromNow() ) );
 
 			tbody.append( row );
 		}
