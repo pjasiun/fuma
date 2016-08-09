@@ -51,11 +51,13 @@
 		<div class="col-xs-6">
 			<h2>Team mates</h2>
 			<div id="team-mates"></div>
+			<div id="team-mates-legend"></div>
 			<p class="text-muted">Minimum 10 games</p>
 		</div>
 		<div class="col-xs-6">
 			<h2>Opponents</h2>
 			<div id="opponents"></div>
+			<div id="opponents-legend"></div>
 			<p class="text-muted">Minimum 10 games</p>
 		</div>
 	</div>
@@ -91,6 +93,9 @@
 		renderTeamMates( addTeamMatesMedals( filterMinGames( data.teams.teamMates, 10 ) ), '#team-mates', 'teamMates' );
 
 		renderTeamMates( addTeamMatesMedals( filterMinGames( data.teams.opponents, 10 ) ), '#opponents', 'opponents' );
+
+		renderLegend( medalsDef.teamMates, '#team-mates-legend' );
+		renderLegend( medalsDef.opponents, '#opponents-legend' );
 	}
 
 	function filterMinGames( players, minGames ) {
@@ -291,39 +296,68 @@
 
 	var medalsDef = {
 		teamMates: {
-			bestWinRatio: { title: 'We rock', icon: '🤘' },
-			worstWinRatio: { title: 'We\'re doomed', icon: '😭' },
-			mostRank: { title: 'Gold digger', icon: '⚒' },
-			mostRankAvg: { title: 'Going shopping', icon: '🛍' },
-			mostGames: { title: 'Always together', icon: '💗' },
-			zero: { title: 'Sup...', icon: '💤' }
+			bestWinRatio: { title: 'We rock', icon: '😎', description: 'Best win ratio' },
+			worstWinRatio: { title: 'We\'re doomed', icon: '😭', description: 'Worst win ratio' },
+			mostRank: { title: 'Gold digger', icon: '⚒', description: 'Most rank gain' },
+			mostRankAvg: { title: 'Points factory', icon: '🏭', description: 'Most rank average' },
+			mostGames: { title: 'Always together', icon: '💗', description: 'Most games played with' },
+			zero: { title: 'Sup...', icon: '💤', description: 'Zero rank change' }
 		},
 		opponents: {
-			bestWinRatio: { title: 'Happy to see you!', icon: '😂' },
-			worstWinRatio: { title: 'Gonna poop', icon: '💩' },
-			mostRank: { title: 'Money bag', icon: '💰' },
-			mostRankAvg: { title: 'Gimme more', icon: '💸' },
-			mostGames: { title: 'Oh, you again...', icon: '😒' },
-			zero: { title: 'Maybe next time', icon: '☯' }
+			bestWinRatio: { title: 'Happy to see you!', icon: '😂', description: 'Best win ratio' },
+			worstWinRatio: { title: 'Gonna poop', icon: '💩', description: 'Worst win ratio' },
+			mostRank: { title: 'Money bag', icon: '💰', description: 'Most rank gain' },
+			mostRankAvg: { title: 'Gimme more', icon: '💸', description: 'Most rank average' },
+			mostGames: { title: 'Oh, you again...', icon: '😒', description: 'Most games played against' },
+			zero: { title: 'Maybe next time', icon: '☯', description: 'Zero rank change' }
 		}
 	};
+
+	function renderLegend( badges, appendTo ) {
+		var table = jQuery( '<table class="table table-striped table-condensed">' );
+
+		var thead = jQuery( '<thead>' );
+		var headRow = jQuery( '<tr>' );
+
+		headRow.append( jQuery( '<th>' ).html( 'badge' ) );
+		headRow.append( jQuery( '<th>' ).html( 'description' ) );
+
+		thead.append( headRow );
+		table.append( thead );
+
+		var tbody = jQuery( '<tbody>' );
+		var row;
+
+		for ( var badge of Object.keys( medalsDef.teamMates ) ) {
+			row = jQuery( '<tr>' );
+
+			row.append( jQuery( '<td>' ).html( renderMedal( badges[ badge ] ) ) );
+			row.append( jQuery( '<td>' ).html( badges[ badge ].description ) );
+
+			tbody.append( row );
+		}
+
+		table.append( tbody );
+
+		table.appendTo( appendTo );
+	}
 
 	function renderMedals( medals, collection ) {
 		if ( medals.length === 0 ) {
 			return '';
 		}
 
-		var out = ' (';
+		var out = ' ( ';
 
-		for ( var medal of medals ) {
-			out += renderMedal( medalsDef[ collection ][ medal ] );
-		}
+		out += medals.map( function( medal ) {
+			return renderMedal( medalsDef[ collection ][ medal ] )
+		} ).join( ' ' );
 
-		function renderMedal( definition ) {
-			return '<span title="' + definition.title + '">' + definition.icon + '</span>'
-		}
+		return out + ' )';
+	}
 
-		return out + ')';
+	function renderMedal( definition ) {
+		return '<span title="' + definition.title + '">' + definition.icon + '</span>'
 	}
 
 	function addTeamMatesMedals( players ) {
