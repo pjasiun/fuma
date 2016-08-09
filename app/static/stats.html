@@ -21,6 +21,38 @@
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 	<script src="http://momentjs.com/downloads/moment.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.27.2/js/jquery.tablesorter.js"></script>
+	<style>
+		.tablesorter-default tfoot td, .tablesorter-default tfoot th {
+			border: 0
+		}
+
+		.tablesorter-default .header, .tablesorter-default .tablesorter-header {
+			background-image: url(data:image/gif;base64,R0lGODlhFQAJAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAkAAAIXjI+AywnaYnhUMoqt3gZXPmVg94yJVQAAOw==);
+			background-position: center right;
+			background-repeat: no-repeat;
+			cursor: pointer;
+			white-space: normal;
+			padding: 4px 20px 4px 4px
+		}
+
+		.tablesorter-default thead .headerSortUp, .tablesorter-default thead .tablesorter-headerAsc, .tablesorter-default thead .tablesorter-headerSortUp {
+			background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7);
+			border-bottom: #000 2px solid
+		}
+
+		.tablesorter-default thead .headerSortDown, .tablesorter-default thead .tablesorter-headerDesc, .tablesorter-default thead .tablesorter-headerSortDown {
+			background-image: url(data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7);
+			border-bottom: #000 2px solid
+		}
+
+		.tablesorter-default thead .sorter-false {
+			background-image: none;
+			cursor: default;
+			padding: 4px
+		}
+	</style>
 </head>
 <body>
 
@@ -80,11 +112,11 @@
 			data.addColumn( 'number', player );
 		}
 
-		let game = 1;
+		var game = 1;
 
 		var historyUpdates = [];
 
-		for ( let i = 0; i < history[ '@length' ]; i++ ) {
+		for ( var i = 0; i < history[ '@length' ]; i++ ) {
 			var rankUpdate = [ game++ ];
 
 			for ( var rankPlayer of players ) {
@@ -96,7 +128,7 @@
 
 		data.addRows( historyUpdates );
 
-		const hTicks = [];
+		var hTicks = [];
 
 		for ( var tick = 0; tick < historyUpdates.length; tick += 50 ) {
 			hTicks.push( tick );
@@ -149,9 +181,9 @@
 		var table = jQuery( '<table class="table table-striped table-condensed">' );
 		var tbody = jQuery( '<tbody>' );
 
-		const thead = jQuery( '<thead>' );
+		var thead = jQuery( '<thead>' );
 
-		const theadRow = jQuery( '<tr>' );
+		var theadRow = jQuery( '<tr>' );
 		theadRow.append( jQuery( '<th>' ).html( 'Record' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Value' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Holder' ) );
@@ -191,8 +223,8 @@
 	function renderRanking( players ) {
 		var table = jQuery( '<table class="table table-striped table-condensed">' );
 
-		const thead = jQuery( '<thead>' );
-		const theadRow = jQuery( '<tr>' );
+		var thead = jQuery( '<thead>' );
+		var theadRow = jQuery( '<tr>' );
 		theadRow.append( jQuery( '<th>' ).html( 'Player' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Score' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Matches' ) );
@@ -216,7 +248,7 @@
 			tbody.append( row );
 		}
 
-		table.appendTo( '#ranking' );
+		table.appendTo( '#ranking' ).tablesorter();;
 	}
 </script>
 
