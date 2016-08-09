@@ -65,9 +65,12 @@ class Registration {
 					'Waiting for the next *' + ( 4 - playersCount ) + '*!' );
 			} else {
 				const players = registered.splice( -4 );
-				players.sort( ( playerA, playerB ) => context.rank.getPlayer( playerA.name ).score -
-				context.rank.getPlayer( playerB.name ).score );
-				const expected = context.rank.getExpected( players[ 0 ], players[ 3 ], players[ 1 ], players[ 2 ] );
+
+				players.sort( ( playerA, playerB ) => {
+					return context.rank.getPlayer( playerA.name ).score - context.rank.getPlayer( playerB.name ).score;
+				} );
+
+				const expected = context.rank.getExpected( players[ 0 ].name, players[ 3 ].name, players[ 1 ].name, players[ 2 ].name );
 
 				asyncResponse( request.response_url, ':fire: @' + players[ 0 ].name + ' @' + players[ 3 ].name +
 					' (' + expected.red + ' : ' + expected.blue + ')' +
