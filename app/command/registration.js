@@ -4,7 +4,7 @@ const registrationRegExp = /^(\+|-)\s*((\s*@[\S]+)*)$/;
 
 class Registration {
 	constructor( context, timeToLive ) {
-		// Default time to live is 5 hrs
+		// Default time to live is 8 hrs
 		this.timeToLive = timeToLive ? timeToLive : 8 * 60 * 60 * 1000;
 		this.context = context;
 		this.registered = [];
