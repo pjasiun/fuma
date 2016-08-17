@@ -30,9 +30,9 @@ describe( 'Stats model', () => {
 				expect( stats.getPlayerStats( 'a' ) )
 					.to.have.property( 'rankHistory' )
 					.that.deep.equal( [
-					[ new Date( '2016 01 01 12:01' ), 2020 ],
-					[ new Date( '2016 01 01 12:02' ), 2038 ],
-					[ new Date( '2016 01 01 12:04' ), 2052 ]
+					[ new Date( '2016 01 01 12:01' ), 2020, 20, '@a @b 10 : 0 @c @d', true ],
+					[ new Date( '2016 01 01 12:02' ), 2038, 18, '@a @b 10 : 0 @c @d', true ],
+					[ new Date( '2016 01 01 12:04' ), 2052, 14, '@a @b 10 : 0 @c @d', true ]
 				] );
 			} );
 		} );
@@ -82,6 +82,8 @@ describe( 'Stats model', () => {
 					rankMin: 2000,
 					seriesLosses: 0,
 					seriesWins: 0,
+					seriesRankGain: 0,
+					seriesRankLoss: 0,
 					wins: 0
 				} );
 			} );
@@ -123,6 +125,8 @@ describe( 'Stats model', () => {
 					rankMin: 2000,
 					seriesLosses: 1,
 					seriesWins: 3,
+					seriesRankGain: 23,
+					seriesRankLoss: 0,
 					wins: 3
 				} );
 
@@ -158,6 +162,8 @@ describe( 'Stats model', () => {
 					rankMin: 1999,
 					seriesLosses: 2,
 					seriesWins: 3,
+					seriesRankGain: 23,
+					seriesRankLoss: 0,
 					wins: 3
 				} );
 
@@ -198,6 +204,8 @@ describe( 'Stats model', () => {
 					rankMin: 1999,
 					seriesLosses: 2,
 					seriesWins: 3,
+					seriesRankGain: 30,
+					seriesRankLoss: -24,
 					wins: 6
 				} );
 
@@ -231,11 +239,12 @@ describe( 'Stats model', () => {
 					rankMin: 1969,
 					seriesLosses: 4,
 					seriesWins: 2,
+					seriesRankGain: 24,
+					seriesRankLoss: -30,
 					wins: 2
 				} );
 
 				rank.reload();
-				console.log( rank.getExpected( 'a', 'b', 'c', 'd' ) );
 
 				// 0 points game (expected: 10 : 7.12)
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 10 : 7 @c @d' ] );
@@ -270,6 +279,8 @@ describe( 'Stats model', () => {
 					rankMin: 1999,
 					seriesLosses: 2,
 					seriesWins: 4,
+					seriesRankGain: 30,
+					seriesRankLoss: -24,
 					wins: 7
 				} );
 			} );

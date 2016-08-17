@@ -102,8 +102,6 @@ class Result {
 			}
 		}
 
-		console.log( table.toString() );
-
 		let outText = '```' + table.toString() + '```';
 
 		// Show short summary of games
@@ -130,7 +128,6 @@ class Result {
 					' rules ¯\\_(ツ)_/¯'
 			}
 
-			console.log( summary );
 			outText += summary;
 		}
 

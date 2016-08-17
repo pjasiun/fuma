@@ -17,7 +17,6 @@ class Aliases {
 		table.push( [ 'Alias:', 'Value:' ], [] );
 
 		for ( let alias of this.context.aliases ) {
-			console.log( alias );
 			table.push( [ alias, this.context.aliases.getValue( alias ) ] );
 		}
 
