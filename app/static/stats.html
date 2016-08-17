@@ -212,7 +212,7 @@
 			var row = jQuery( '<tr>' );
 			row.append( jQuery( '<td>' ).html( title ) );
 			row.append( jQuery( '<td class="text-right">' ).html( data.record ) );
-			row.append( jQuery( '<td class="text-right">' ).html( data.holder ) );
+			row.append( jQuery( '<td class="text-right">' ).html( data.holder.split( ', ' ).map( linkToPlayer ).join( ', ' ) ) );
 
 			tbody.append( row );
 		}
@@ -240,7 +240,7 @@
 		for ( var player of players ) {
 			var row = jQuery( '<tr>' );
 
-			row.append( jQuery( '<td>' ).html( '<a href="?player=' + player.name + '">' + player.name + '</a>' ) );
+			row.append( jQuery( '<td>' ).html( linkToPlayer( player.name ) ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.score ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.matches ) );
 			row.append( jQuery( '<td class="text-right">' ).html( moment( player.lastGame ).fromNow() ) );
@@ -248,7 +248,11 @@
 			tbody.append( row );
 		}
 
-		table.appendTo( '#ranking' ).tablesorter();;
+		table.appendTo( '#ranking' ).tablesorter();
+	}
+
+	function linkToPlayer( playerName ) {
+		return '<a href="?player=' + playerName + '">' + playerName + '</a>';
 	}
 </script>
 

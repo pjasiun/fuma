@@ -176,14 +176,22 @@
 	function renderLastGames( lastGames, player ) {
 		var table = jQuery( '<table class="table table-striped table-condensed">' );
 		var tbody = jQuery( '<tbody>' );
-		var strongPlayer = '<strong>' + player + '</strong>';
+		var strongPlayer = '><strong>' + player + '</strong><';
 
 		for ( var lastGame of lastGames ) {
 			var row = jQuery( '<tr>' );
 
-			row.append( jQuery( '<td class="text-right">' ).html( lastGame.red.replace( player, strongPlayer ) ) );
+			row.append( jQuery( '<td class="text-right">' ).html(
+					lastGame.red
+							.split( ' ' ).map( linkToPlayer ).join( ' ' )
+							.replace( '>' + player + '<', strongPlayer ) )
+			);
 			row.append( jQuery( '<td class="text-center">' ).html( lastGame.score ) );
-			row.append( jQuery( '<td class="text-left">' ).html( lastGame.blue.replace( player, strongPlayer ) ) );
+			row.append( jQuery( '<td class="text-left">' ).html(
+					lastGame.blue
+							.split( ' ' ).map( linkToPlayer ).join( ' ' )
+							.replace( '>' + player + '<', strongPlayer ) )
+			);
 			row.append( jQuery( '<td class="text-right">' ).html( lastGame.rankChange ) );
 
 			if ( lastGame.rankChange > 0 ) {
@@ -309,7 +317,7 @@
 				row.addClass( 'danger' );
 			}
 
-			row.append( jQuery( '<td>' ).html( player.name + renderMedals( player.medals, medals ) ) );
+			row.append( jQuery( '<td>' ).html( linkToPlayer( player.name ) + renderMedals( player.medals, medals ) ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.games ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.wins ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.losses ) );
@@ -322,7 +330,7 @@
 
 		table.append( tbody );
 
-		table.appendTo( renderTo ).tablesorter();;
+		table.appendTo( renderTo ).tablesorter();
 	}
 
 	var medalsDef = {
@@ -450,6 +458,10 @@
 		}
 
 		return players;
+	}
+
+	function linkToPlayer( playerName ) {
+		return '<a href="?player=' + playerName + '">' + playerName + '</a>';
 	}
 </script>
 </body>
