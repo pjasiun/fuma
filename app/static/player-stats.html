@@ -143,18 +143,18 @@
 		const strongPlayer = '<strong>' + player + '</strong>';
 
 		makeRow( 'Humiliations', records.humiliations.wins );
-		makeRow( 'Humiliated', records.humiliations.lost );
-		makeRow( 'Rank Gain on Lost (number of games)', records.gainRankOnLost );
-		makeRow( 'Rank Gain on Lost (max)', records.gainRankOnLostMax );
-		makeRow( 'Rank Lost on Win (number of games)', records.lostRankOnWin );
-		makeRow( 'Rank Lost on Win (max)', records.lostRankOnWinMax );
+		makeRow( 'Humiliated', records.humiliations.losses );
+		makeRow( 'Rank Gain on Loss (number of games)', records.gainRankOnLoss );
+		makeRow( 'Rank Gain on Loss (max)', records.gainRankOnLossMax );
+		makeRow( 'Rank Loss on Win (number of games)', records.lossRankOnWin );
+		makeRow( 'Rank Loss on Win (max)', records.lossRankOnWinMax );
 		makeRow( 'Pointless games', records.noRankChange );
 		makeRow( 'Max rank gain', '<strong>' + records.pointsGain + '</strong> ' +
 				renderMatch( records.pointsGainMatch ) );
-		makeRow( 'Max rank lost', '<strong>' + records.pointsLost + '</strong> ' +
-				renderMatch( records.pointsLostMatch ) );
+		makeRow( 'Max rank loss', '<strong>' + records.pointsLoss + '</strong> ' +
+				renderMatch( records.pointsLossMatch ) );
 		makeRow( 'Wins series', records.seriesWins );
-		makeRow( 'Loses series', records.seriesLooses );
+		makeRow( 'Loses series', records.seriesLosses );
 		makeRow( 'Max rank', records.rankMax );
 		makeRow( 'Min rank', records.rankMin );
 
@@ -256,7 +256,7 @@
 		data.addColumn( 'number', 'Number' );
 
 		data.addRows( [
-			[ 'Looses', records.looses ],
+			[ 'Losses', records.losses ],
 			[ 'Wins', records.wins ]
 		] );
 
@@ -290,7 +290,7 @@
 		headRow.append( jQuery( '<th>' ).html( 'player' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'games' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'wins' ) );
-		headRow.append( jQuery( '<th class="text-right">' ).html( 'looses' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'losses' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'rank total' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'rank avg' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'win ratio' ) );
@@ -312,7 +312,7 @@
 			row.append( jQuery( '<td>' ).html( player.name + renderMedals( player.medals, medals ) ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.games ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.wins ) );
-			row.append( jQuery( '<td class="text-right">' ).html( player.looses ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.losses ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.rankChangeTotal ) );
 			row.append( jQuery( '<td class="text-right">' ).html( parseFloat( player.rankChangeAvg ).toFixed( 2 ) ) );
 			row.append( jQuery( '<td class="text-right">' ).html( parseInt( player.winRatio * 100 ) + '%' ) );

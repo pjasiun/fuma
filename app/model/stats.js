@@ -93,18 +93,18 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 function getRecords( allUpdates, player ) {
 	const max = {
 		wins: 0,
-		looses: 0,
+		losses: 0,
 		seriesWins: 0,
-		seriesLooses: 0,
+		seriesLosses: 0,
 		pointsGain: 0,
 		pointsGainMatch: false,
-		pointsLost: 0,
-		pointsLostMatch: false,
-		humiliations: { wins: 0, lost: 0 },
-		gainRankOnLost: 0,
-		gainRankOnLostMax: 0,
-		lostRankOnWin: 0,
-		lostRankOnWinMax: 0,
+		pointsLoss: 0,
+		pointsLossMatch: false,
+		humiliations: { wins: 0, losses: 0 },
+		gainRankOnLoss: 0,
+		gainRankOnLossMax: 0,
+		lossRankOnWin: 0,
+		lossRankOnWinMax: 0,
 		noRankChange: 0,
 		rankMax: 2000,
 		rankMin: 2000
@@ -145,10 +145,10 @@ function getRecords( allUpdates, player ) {
 			}
 
 			if ( rankChange < 0 ) {
-				max.lostRankOnWin += 1;
+				max.lossRankOnWin += 1;
 
-				if ( rankChange < max.lostRankOnWinMax ) {
-					max.lostRankOnWinMax = rankChange;
+				if ( rankChange < max.lossRankOnWinMax ) {
+					max.lossRankOnWinMax = rankChange;
 				}
 			}
 
@@ -160,27 +160,27 @@ function getRecords( allUpdates, player ) {
 			currentLosses += 1;
 			currentWins = 0;
 
-			max.looses += 1;
+			max.losses += 1;
 
-			if ( currentLosses > max.seriesLooses ) {
-				max.seriesLooses = currentLosses;
+			if ( currentLosses > max.seriesLosses ) {
+				max.seriesLosses = currentLosses;
 			}
 
 			if ( update.match.blueScore === 0 ) {
-				max.humiliations.lost += 1;
+				max.humiliations.losses += 1;
 			}
 
 			if ( rankChange > 0 ) {
-				max.gainRankOnLost += 1;
+				max.gainRankOnLoss += 1;
 
-				if ( rankChange > max.gainRankOnLostMax ) {
-					max.gainRankOnLostMax = rankChange;
+				if ( rankChange > max.gainRankOnLossMax ) {
+					max.gainRankOnLossMax = rankChange;
 				}
 			}
 
-			if ( rankChange < max.pointsLost ) {
-				max.pointsLost = rankChange;
-				max.pointsLostMatch = getGameData( update, change, player );
+			if ( rankChange < max.pointsLoss ) {
+				max.pointsLoss = rankChange;
+				max.pointsLossMatch = getGameData( update, change, player );
 			}
 		}
 
@@ -264,7 +264,7 @@ function calculateRecords( allUpdates, players ) {
 	const allRecords = { humiliations: {} };
 
 	const maxRecords = [
-		'gainRankOnLost', 'gainRankOnLostMax', 'looses', 'wins', 'pointsGain', 'lostRankOnWin', 'rankMax', 'seriesLooses', 'seriesWins',
+		'gainRankOnLoss', 'gainRankOnLossMax', 'losses', 'wins', 'pointsGain', 'lossRankOnWin', 'rankMax', 'seriesLosses', 'seriesWins',
 		'noRankChange'
 	];
 
@@ -286,7 +286,7 @@ function calculateRecords( allUpdates, players ) {
 		allRecords[ record ] = { record: recordMax, holder: holder };
 	}
 
-	for ( let record of [ 'wins', 'lost' ] ) {
+	for ( let record of [ 'wins', 'losses' ] ) {
 		let recordMax = 0;
 		let holder = '';
 
@@ -304,7 +304,7 @@ function calculateRecords( allUpdates, players ) {
 		allRecords.humiliations[ record ] = { record: recordMax, holder: holder };
 	}
 
-	for ( let record of [ 'lostRankOnWinMax', 'pointsLost', 'rankMin' ] ) {
+	for ( let record of [ 'lossRankOnWinMax', 'pointsLoss', 'rankMin' ] ) {
 		let recordMin = 2000;
 		let holder = '';
 
@@ -378,7 +378,7 @@ function getPlayerTeams( allUpdates, player ) {
 				name: player,
 				wins: playerData.wins,
 				games: playerData.games,
-				looses: playerData.games - playerData.wins,
+				losses: playerData.games - playerData.wins,
 				winRatio: playerData.wins / playerData.games,
 				rankChangeTotal: playerData.rankChangeTotal,
 				rankChangeAvg: playerData.rankChangeTotal / playerData.games

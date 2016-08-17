@@ -67,26 +67,26 @@ describe( 'Stats model', () => {
 				expect( stats.getPlayerStats( 'a' ) )
 					.to.have.property( 'records' )
 					.that.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 0, wins: 0 },
-					looses: 0,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 0, wins: 0 },
+					losses: 0,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 0,
 					pointsGainMatch: false,
-					pointsLost: 0,
-					pointsLostMatch: false,
+					pointsLoss: 0,
+					pointsLossMatch: false,
 					rankMax: 2000,
 					rankMin: 2000,
-					seriesLooses: 0,
+					seriesLosses: 0,
 					seriesWins: 0,
 					wins: 0
 				} );
 			} );
 
-			it( 'should count wins and looses', () => {
+			it( 'should count wins and losses', () => {
 				historyStorage.data.push( [ '2016 01 01 12:01', '@a @b 10 : 8 @c @d' ] );
 				historyStorage.data.push( [ '2016 01 01 12:02', '@a @b 10 : 8 @c @d' ] );
 				historyStorage.data.push( [ '2016 01 01 12:03', '@z @b 10 : 8 @c @d' ] );
@@ -94,12 +94,12 @@ describe( 'Stats model', () => {
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 0 : 10 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 1,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 1,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -110,8 +110,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -121,7 +121,7 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2023,
 					rankMin: 2000,
-					seriesLooses: 1,
+					seriesLosses: 1,
 					seriesWins: 3,
 					wins: 3
 				} );
@@ -129,12 +129,12 @@ describe( 'Stats model', () => {
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 9 : 10 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 2,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 2,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -145,8 +145,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -156,7 +156,7 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2023,
 					rankMin: 1999,
-					seriesLooses: 2,
+					seriesLosses: 2,
 					seriesWins: 3,
 					wins: 3
 				} );
@@ -169,12 +169,12 @@ describe( 'Stats model', () => {
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 10 : 8 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 2,
-					lostRankOnWin: 1,
-					lostRankOnWinMax: -1,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 2,
+					lossRankOnWin: 1,
+					lossRankOnWinMax: -1,
 					noRankChange: 0,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -185,8 +185,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -196,18 +196,18 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2029,
 					rankMin: 1999,
-					seriesLooses: 2,
+					seriesLosses: 2,
 					seriesWins: 3,
 					wins: 6
 				} );
 
 				expect( stats.getPlayerStats( 'c' ).records ).to.deep.equal( {
-					gainRankOnLost: 1,
-					gainRankOnLostMax: 1,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 7,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 1,
+					gainRankOnLossMax: 1,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 7,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 23,
 					pointsGainMatch: {
@@ -218,8 +218,8 @@ describe( 'Stats model', () => {
 						'red': 'c d',
 						'score': '10 : 0'
 					},
-					pointsLost: -19,
-					pointsLostMatch: {
+					pointsLoss: -19,
+					pointsLossMatch: {
 						'blue': 'c d',
 						'date': new Date( [ '2016 01 01 12:04' ] ),
 						'isWin': false,
@@ -229,7 +229,7 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2000,
 					rankMin: 1969,
-					seriesLooses: 4,
+					seriesLosses: 4,
 					seriesWins: 2,
 					wins: 2
 				} );
@@ -241,12 +241,12 @@ describe( 'Stats model', () => {
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 10 : 7 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 2,
-					lostRankOnWin: 1,
-					lostRankOnWinMax: -1,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 2,
+					lossRankOnWin: 1,
+					lossRankOnWinMax: -1,
 					noRankChange: 1,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -257,8 +257,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -268,7 +268,7 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2029,
 					rankMin: 1999,
-					seriesLooses: 2,
+					seriesLosses: 2,
 					seriesWins: 4,
 					wins: 7
 				} );
