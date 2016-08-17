@@ -102,6 +102,8 @@ function getRecords( allUpdates, player ) {
 		losses: 0,
 		seriesWins: 0,
 		seriesLosses: 0,
+		seriesRankGain: 0,
+		seriesRankLoss: 0,
 		pointsGain: 0,
 		pointsGainMatch: false,
 		pointsLoss: 0,
@@ -118,6 +120,8 @@ function getRecords( allUpdates, player ) {
 
 	let currentWins = 0;
 	let currentLosses = 0;
+
+	let currentRankSerries = 0;
 
 	for ( let update of allUpdates ) {
 		const change = getPlayerChange( player, update );
@@ -193,6 +197,26 @@ function getRecords( allUpdates, player ) {
 		if ( rankChange === 0 ) {
 			max.noRankChange += 1;
 		}
+
+		if ( rankChange > 0 ) {
+			if ( currentRankSerries < 0 ) {
+				if ( currentRankSerries < max.seriesRankLoss ) {
+					max.seriesRankLoss = currentRankSerries;
+				}
+				currentRankSerries = 0;
+			}
+		}
+
+		if ( rankChange < 0 ) {
+			if ( currentRankSerries > 0 ) {
+				if ( currentRankSerries > max.seriesRankGain ) {
+					max.seriesRankGain = currentRankSerries;
+				}
+				currentRankSerries = 0;
+			}
+		}
+
+		currentRankSerries += rankChange;
 	}
 
 	return max;
@@ -271,7 +295,7 @@ function calculateRecords( allUpdates, players ) {
 
 	const maxRecords = [
 		'gainRankOnLoss', 'gainRankOnLossMax', 'losses', 'wins', 'pointsGain', 'lossRankOnWin', 'rankMax', 'seriesLosses', 'seriesWins',
-		'noRankChange'
+		'noRankChange', 'seriesRankGain'
 	];
 
 	for ( let record of maxRecords ) {
@@ -310,7 +334,7 @@ function calculateRecords( allUpdates, players ) {
 		allRecords.humiliations[ record ] = { record: recordMax, holder: holder };
 	}
 
-	for ( let record of [ 'lossRankOnWinMax', 'pointsLoss', 'rankMin' ] ) {
+	for ( let record of [ 'lossRankOnWinMax', 'pointsLoss', 'rankMin', 'seriesRankLoss' ] ) {
 		let recordMin = 2000;
 		let holder = '';
 

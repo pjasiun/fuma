@@ -163,7 +163,6 @@
 			},
 			hAxis: {
 				title: 'Game',
-//				ticks: hTicks,
 				minorGridlines: { count: 4 }
 			}
 		};
@@ -183,9 +182,6 @@
 			'containerId' : 'rank-history',
 			'options': options
 		} );
-
-//		chart.draw( data, options );
-
 
 		dashboard.bind( gameSlider, chart );
 
@@ -237,8 +233,10 @@
 		makeRow( 'Rank Loss on Win (max)', records.lossRankOnWinMax );
 		makeRow( 'Max rank gain', records.pointsGain );
 		makeRow( 'Max rank loss', records.pointsLoss );
-		makeRow( 'Wins series', records.seriesWins );
-		makeRow( 'Loses series', records.seriesLosses );
+		makeRow( 'Longest Winning streak', records.seriesWins );
+		makeRow( 'Longest Losing streak', records.seriesLosses );
+		makeRow( 'Highest rank gain streak (points total)', records.seriesRankGain );
+		makeRow( 'Highest rank loss streak (points total)', records.seriesRankLoss );
 		makeRow( 'Max rank', records.rankMax );
 		makeRow( 'Min rank', records.rankMin );
 

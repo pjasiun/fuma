@@ -153,8 +153,10 @@
 				renderMatch( records.pointsGainMatch ) );
 		makeRow( 'Max rank loss', '<strong>' + records.pointsLoss + '</strong> ' +
 				renderMatch( records.pointsLossMatch ) );
-		makeRow( 'Wins series', records.seriesWins );
-		makeRow( 'Loses series', records.seriesLosses );
+		makeRow( 'Longest Winning streak', records.seriesWins );
+		makeRow( 'Longest Losing streak', records.seriesLosses );
+		makeRow( 'Highest rank gain streak (points total)', records.seriesRankGain );
+		makeRow( 'Highest rank loss streak (points total)', records.seriesRankLoss );
 		makeRow( 'Max rank', records.rankMax );
 		makeRow( 'Min rank', records.rankMin );
 
