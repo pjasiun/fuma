@@ -110,6 +110,8 @@
 		data.addColumn( 'number', 'Game' );
 		for ( var player of players ) {
 			data.addColumn( 'number', player );
+			data.addColumn( { type: 'string', role: 'tooltip' } );
+			data.addColumn( { type: 'boolean', role: 'scope' } );
 		}
 
 		var game = 1;
@@ -120,7 +122,17 @@
 			var rankUpdate = [ game++ ];
 
 			for ( var rankPlayer of players ) {
+				var isScope = history[ rankPlayer ][ i ][ 4 ];
+				var change = history[ rankPlayer ][ i ][ 2 ];
+				var toolTip = '@' + rankPlayer + ':\n' + 'Game: ' + game + ' Rank: ' + history[ rankPlayer ][ i ][ 1 ];
+				if ( isScope ) {
+					toolTip +=
+							' (' + ( change > 0 ? '+' : '' ) + ( change ) + ')' +
+							'\n' + history[ rankPlayer ][ i ][ 3 ];
+				}
 				rankUpdate.push( history[ rankPlayer ][ i ][ 1 ] );
+				rankUpdate.push( toolTip );
+				rankUpdate.push( isScope );
 			}
 
 			historyUpdates.push( rankUpdate );

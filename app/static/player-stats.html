@@ -218,11 +218,19 @@
 
 		data.addColumn( 'number', 'Game' );
 		data.addColumn( 'number', 'Rank' );
+		data.addColumn( { type: 'string', role: 'tooltip' } );
 
 		var game = 1;
 
+		var lastScore = 2000;
+
 		const mapped = history.map( function( entry ) {
-			return [ game++, entry[ 1 ] ];
+			const change = entry[ 2 ];
+			var toolTip = 'Game: ' + game + ' Rank: ' + entry[ 1 ] +
+					' (' + ( change > 0 ? '+' : '' ) + ( change ) + ')' +
+					'\n' + entry[ 3 ];
+			lastScore = entry[ 1 ];
+			return [ game++, entry[ 1 ], toolTip ];
 		} );
 
 		const hTicks = [];

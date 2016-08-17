@@ -80,10 +80,16 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 		const playerChange = getPlayerChange( player, update );
 
 		if ( playerChange ) {
-			rankHistory.push( [ update.match.date, playerChange.newScore ] )
+			rankHistory.push( [
+				update.match.date,
+				playerChange.newScore,
+				playerChange.newScore - playerChange.oldScore,
+				update.match.toString(),
+				true
+			] );
 			lastPlayerScore = playerChange.newScore;
 		} else if ( includeOthers ) {
-			rankHistory.push( [ update.match.date, lastPlayerScore ] )
+			rankHistory.push( [ update.match.date, lastPlayerScore, 0, update.match.toString(), false ] );
 		}
 	}
 
