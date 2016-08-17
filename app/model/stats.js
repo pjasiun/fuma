@@ -76,7 +76,14 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 
 	let lastPlayerScore = 2000;
 
+	// Used to render "certain" data points in google charts: https://google-developers.appspot.com/chart/interactive/docs/roles#certaintyrole
+	// Certainty role is used to render dashed line on cumulative rank chart when player wasn't participating in that game.
+	let lastUpdateWasPlayers = false;
+
+	let currentIndex = -1;
+
 	for ( let update of allUpdates ) {
+		currentIndex++;
 		const playerChange = getPlayerChange( player, update );
 
 		if ( playerChange ) {
@@ -88,8 +95,16 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 				true
 			] );
 			lastPlayerScore = playerChange.newScore;
+
+			// Change previous data point to certain in order to render this change as solid line on google charts.
+			if ( currentIndex > 1 && !lastUpdateWasPlayers ) {
+				rankHistory[ currentIndex - 1 ][ 4 ] = true;
+			}
+
+			lastUpdateWasPlayers = true;
 		} else if ( includeOthers ) {
-			rankHistory.push( [ update.match.date, lastPlayerScore, 0, update.match.toString(), false ] );
+			lastUpdateWasPlayers = false;
+			rankHistory.push( [ update.match.date, lastPlayerScore, 0, update.match.toString(), lastUpdateWasPlayers ] );
 		}
 	}
 
