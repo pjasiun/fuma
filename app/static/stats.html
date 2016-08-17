@@ -103,7 +103,7 @@
 
 		renderRecords( data.records );
 
-		renderRanking( data.players );
+		renderRanking( data.players, data.records );
 	}
 
 	function drawRankHistoryChart( history ) {
@@ -178,8 +178,8 @@
 		} );
 
 		var chart = new google.visualization.ChartWrapper( {
-			'chartType' : 'LineChart',
-			'containerId' : 'rank-history',
+			'chartType': 'LineChart',
+			'containerId': 'rank-history',
 			'options': options
 		} );
 
@@ -252,13 +252,14 @@
 		table.appendTo( '#records' );
 	}
 
-	function renderRanking( players ) {
+	function renderRanking( players, records ) {
 		var table = jQuery( '<table class="table table-striped table-condensed">' );
 
 		var thead = jQuery( '<thead>' );
 		var theadRow = jQuery( '<tr>' );
 		theadRow.append( jQuery( '<th>' ).html( 'Player' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Score' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Last Change' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Matches' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Last game' ) );
 		thead.append( theadRow );
@@ -270,10 +271,15 @@
 		table.append( tbody );
 
 		for ( var player of players ) {
+			var current = records.players[ player.name ].current;
+
 			var row = jQuery( '<tr>' );
 
-			row.append( jQuery( '<td>' ).html( linkToPlayer( player.name ) ) );
+			row.append( jQuery( '<td>' ).html(
+					linkToPlayer( player.name ) + ' ' + renderPlayerCurrentBadge( current )
+			) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.score ) );
+			row.append( jQuery( '<td class="text-right">' ).html( current.rank ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.matches ) );
 			row.append( jQuery( '<td class="text-right">' ).html( moment( player.lastGame ).fromNow() ) );
 
@@ -281,6 +287,13 @@
 		}
 
 		table.appendTo( '#ranking' ).tablesorter();
+	}
+
+	function renderPlayerCurrentBadge( current ) {
+		var tooltip = 'Is on ' + ( current.isWinning ? 'winning' : 'losing' ) + ' streak: ' + current.gamesStreak;
+		tooltip += '\n' + 'Streak rank change: ' + ( current.rankStreak > 0 ? '+' : '' ) + current.rankStreak;
+
+		return '<span title="' + tooltip + '">' + ( current.isWinning ? '📈' : '📉' ) + '</span>';
 	}
 
 	function linkToPlayer( playerName ) {

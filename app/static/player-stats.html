@@ -57,6 +57,7 @@
 	<div class="row">
 		<div class="col-xs-8">
 			<h1>Player: <strong id="player-name"></strong></h1>
+			<div id="player-current"></div>
 		</div>
 		<div class="col-xs-4">
 			<div id="games-summary"></div>
@@ -118,6 +119,8 @@
 		renderLastGames( data.lastGames, player );
 
 		renderRecords( data.records, player );
+
+		renderCurrent( data.records.current );
 
 		renderTeamMates( addTeamMatesMedals( filterMinGames( data.teams.teamMates, 10 ) ), '#team-mates', 'teamMates' );
 
@@ -470,6 +473,27 @@
 
 	function linkToPlayer( playerName ) {
 		return '<a href="?player=' + playerName + '">' + playerName + '</a>';
+	}
+
+	function renderCurrent( current ) {
+		var gamesStreak = current.isWinning ? '📈' : '📉';
+		gamesStreak += ' Is on <strong>';
+
+		if ( current.isWinning ) {
+			gamesStreak += 'winning';
+		} else {
+			gamesStreak += 'losing';
+		}
+
+		gamesStreak += '</strong> streak: ' + current.gamesStreak + '.';
+
+		var rankStreak = 'Current rank change streak: <strong>' +
+				( current.rankStreak > 0 ? '+' : '' ) + current.rankStreak +
+				'</strong>.';
+
+		jQuery( '#player-current' )
+				.append( jQuery( '<p>' ).html( gamesStreak ) )
+				.append( jQuery( '<p>' ).html( rankStreak ) );
 	}
 </script>
 </body>

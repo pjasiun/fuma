@@ -122,6 +122,7 @@ function getRecords( allUpdates, player ) {
 	let currentLosses = 0;
 
 	let currentRankSerries = 0;
+	let rankChange = 0;
 
 	for ( let update of allUpdates ) {
 		const change = getPlayerChange( player, update );
@@ -138,7 +139,7 @@ function getRecords( allUpdates, player ) {
 			max.rankMin = change.newScore;
 		}
 
-		const rankChange = getRankChange( change );
+		rankChange = getRankChange( change );
 
 		if ( isWin( player, update ) ) {
 			currentWins += 1;
@@ -219,6 +220,13 @@ function getRecords( allUpdates, player ) {
 		currentRankSerries += rankChange;
 	}
 
+	max.current = {
+		isWinning: currentWins > 0,
+		gamesStreak: currentWins ? currentWins : currentLosses,
+		rankStreak: currentRankSerries,
+		rank: rankChange
+	};
+
 	return max;
 }
 
@@ -291,7 +299,7 @@ function calculateRecords( allUpdates, players ) {
 		records[ player.name ] = getRecords( allUpdates, player.name );
 	}
 
-	const allRecords = { humiliations: {} };
+	const allRecords = { humiliations: {}, players: records };
 
 	const maxRecords = [
 		'gainRankOnLoss', 'gainRankOnLossMax', 'losses', 'wins', 'pointsGain', 'lossRankOnWin', 'rankMax', 'seriesLosses', 'seriesWins',

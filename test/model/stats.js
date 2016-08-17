@@ -84,7 +84,13 @@ describe( 'Stats model', () => {
 					seriesWins: 0,
 					seriesRankGain: 0,
 					seriesRankLoss: 0,
-					wins: 0
+					wins: 0,
+					current: {
+						gamesStreak: 0,
+						isWinning: false,
+						rank: 0,
+						rankStreak: 0
+					}
 				} );
 			} );
 
@@ -127,7 +133,13 @@ describe( 'Stats model', () => {
 					seriesWins: 3,
 					seriesRankGain: 23,
 					seriesRankLoss: 0,
-					wins: 3
+					wins: 3,
+					current: {
+						gamesStreak: 1,
+						isWinning: false,
+						rank: -23,
+						rankStreak: -23
+					}
 				} );
 
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 9 : 10 @c @d' ] );
@@ -164,7 +176,13 @@ describe( 'Stats model', () => {
 					seriesWins: 3,
 					seriesRankGain: 23,
 					seriesRankLoss: 0,
-					wins: 3
+					wins: 3,
+					current: {
+						gamesStreak: 2,
+						isWinning: false,
+						rank: -1,
+						rankStreak: -24
+					}
 				} );
 
 				// Prepare rank for loose-win situation
@@ -206,7 +224,13 @@ describe( 'Stats model', () => {
 					seriesWins: 3,
 					seriesRankGain: 30,
 					seriesRankLoss: -24,
-					wins: 6
+					wins: 6,
+					current: {
+						gamesStreak: 3,
+						isWinning: true,
+						rank: -1,
+						rankStreak: -1
+					}
 				} );
 
 				expect( stats.getPlayerStats( 'c' ).records ).to.deep.equal( {
@@ -241,7 +265,13 @@ describe( 'Stats model', () => {
 					seriesWins: 2,
 					seriesRankGain: 24,
 					seriesRankLoss: -30,
-					wins: 2
+					wins: 2,
+					current: {
+						gamesStreak: 3,
+						isWinning: false,
+						rank: 1,
+						rankStreak: 1
+					}
 				} );
 
 				rank.reload();
@@ -281,7 +311,13 @@ describe( 'Stats model', () => {
 					seriesWins: 4,
 					seriesRankGain: 30,
 					seriesRankLoss: -24,
-					wins: 7
+					wins: 7,
+					current: {
+						gamesStreak: 4,
+						isWinning: true,
+						rank: 0,
+						rankStreak: -1
+					}
 				} );
 			} );
 		} );
