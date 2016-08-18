@@ -141,7 +141,7 @@
 		var tbody = jQuery( '<tbody>' );
 		table.append( tbody );
 
-		const strongPlayer = '<strong>' + player + '</strong>';
+		var strongPlayer = '<strong>' + player + '</strong>';
 
 		makeRow( 'Humiliations', records.humiliations.wins );
 		makeRow( 'Humiliated', records.humiliations.losses );
@@ -227,8 +227,8 @@
 
 		var lastScore = 2000;
 
-		const mapped = history.map( function( entry ) {
-			const change = entry[ 2 ];
+		var mapped = history.map( function( entry ) {
+			var change = entry[ 2 ];
 			var toolTip = 'Game: ' + game + ' Rank: ' + entry[ 1 ] +
 					' (' + ( change > 0 ? '+' : '' ) + ( change ) + ')' +
 					'\n' + entry[ 3 ];
@@ -236,7 +236,7 @@
 			return [ game++, entry[ 1 ], toolTip ];
 		} );
 
-		const hTicks = [];
+		var hTicks = [];
 
 		for ( var tick = 0; tick < history.length; tick += 50 ) {
 			hTicks.push( tick );

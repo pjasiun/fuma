@@ -128,11 +128,14 @@
 				var isScope = history[ rankPlayer ][ i ][ 4 ];
 				var change = history[ rankPlayer ][ i ][ 2 ];
 				var toolTip = '@' + rankPlayer + ':\n' + 'Game: ' + game + ' Rank: ' + history[ rankPlayer ][ i ][ 1 ];
-				if ( isScope ) {
+				var matchString = history[ rankPlayer ][ i ][ 3 ];
+
+				if ( matchString ) {
 					toolTip +=
 							' (' + ( change > 0 ? '+' : '' ) + ( change ) + ')' +
-							'\n' + history[ rankPlayer ][ i ][ 3 ];
+							'\n' + matchString;
 				}
+
 				rankUpdate.push( history[ rankPlayer ][ i ][ 1 ] );
 				rankUpdate.push( toolTip );
 				rankUpdate.push( isScope );
