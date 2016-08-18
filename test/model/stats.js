@@ -30,9 +30,9 @@ describe( 'Stats model', () => {
 				expect( stats.getPlayerStats( 'a' ) )
 					.to.have.property( 'rankHistory' )
 					.that.deep.equal( [
-					[ new Date( '2016 01 01 12:01' ), 2020 ],
-					[ new Date( '2016 01 01 12:02' ), 2038 ],
-					[ new Date( '2016 01 01 12:04' ), 2052 ]
+					[ new Date( '2016 01 01 12:01' ), 2020, 20, '@a @b 10 : 0 @c @d', true ],
+					[ new Date( '2016 01 01 12:02' ), 2038, 18, '@a @b 10 : 0 @c @d', true ],
+					[ new Date( '2016 01 01 12:04' ), 2052, 14, '@a @b 10 : 0 @c @d', true ]
 				] );
 			} );
 		} );
@@ -67,26 +67,34 @@ describe( 'Stats model', () => {
 				expect( stats.getPlayerStats( 'a' ) )
 					.to.have.property( 'records' )
 					.that.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 0, wins: 0 },
-					looses: 0,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 0, wins: 0 },
+					losses: 0,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 0,
 					pointsGainMatch: false,
-					pointsLost: 0,
-					pointsLostMatch: false,
+					pointsLoss: 0,
+					pointsLossMatch: false,
 					rankMax: 2000,
 					rankMin: 2000,
-					seriesLooses: 0,
+					seriesLosses: 0,
 					seriesWins: 0,
-					wins: 0
+					seriesRankGain: 0,
+					seriesRankLoss: 0,
+					wins: 0,
+					current: {
+						gamesStreak: 0,
+						isWinning: false,
+						rank: 0,
+						rankStreak: 0
+					}
 				} );
 			} );
 
-			it( 'should count wins and looses', () => {
+			it( 'should count wins and losses', () => {
 				historyStorage.data.push( [ '2016 01 01 12:01', '@a @b 10 : 8 @c @d' ] );
 				historyStorage.data.push( [ '2016 01 01 12:02', '@a @b 10 : 8 @c @d' ] );
 				historyStorage.data.push( [ '2016 01 01 12:03', '@z @b 10 : 8 @c @d' ] );
@@ -94,12 +102,12 @@ describe( 'Stats model', () => {
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 0 : 10 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 1,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 1,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -110,8 +118,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -121,20 +129,28 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2023,
 					rankMin: 2000,
-					seriesLooses: 1,
+					seriesLosses: 1,
 					seriesWins: 3,
-					wins: 3
+					seriesRankGain: 23,
+					seriesRankLoss: 0,
+					wins: 3,
+					current: {
+						gamesStreak: 1,
+						isWinning: false,
+						rank: -23,
+						rankStreak: -23
+					}
 				} );
 
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 9 : 10 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 2,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 2,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -145,8 +161,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -156,9 +172,17 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2023,
 					rankMin: 1999,
-					seriesLooses: 2,
+					seriesLosses: 2,
 					seriesWins: 3,
-					wins: 3
+					seriesRankGain: 23,
+					seriesRankLoss: 0,
+					wins: 3,
+					current: {
+						gamesStreak: 2,
+						isWinning: false,
+						rank: -1,
+						rankStreak: -24
+					}
 				} );
 
 				// Prepare rank for loose-win situation
@@ -169,12 +193,12 @@ describe( 'Stats model', () => {
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 10 : 8 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 2,
-					lostRankOnWin: 1,
-					lostRankOnWinMax: -1,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 2,
+					lossRankOnWin: 1,
+					lossRankOnWinMax: -1,
 					noRankChange: 0,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -185,8 +209,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -196,18 +220,26 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2029,
 					rankMin: 1999,
-					seriesLooses: 2,
+					seriesLosses: 2,
 					seriesWins: 3,
-					wins: 6
+					seriesRankGain: 30,
+					seriesRankLoss: -24,
+					wins: 6,
+					current: {
+						gamesStreak: 3,
+						isWinning: true,
+						rank: -1,
+						rankStreak: -1
+					}
 				} );
 
 				expect( stats.getPlayerStats( 'c' ).records ).to.deep.equal( {
-					gainRankOnLost: 1,
-					gainRankOnLostMax: 1,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 7,
-					lostRankOnWin: 0,
-					lostRankOnWinMax: 0,
+					gainRankOnLoss: 1,
+					gainRankOnLossMax: 1,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 7,
+					lossRankOnWin: 0,
+					lossRankOnWinMax: 0,
 					noRankChange: 0,
 					pointsGain: 23,
 					pointsGainMatch: {
@@ -218,8 +250,8 @@ describe( 'Stats model', () => {
 						'red': 'c d',
 						'score': '10 : 0'
 					},
-					pointsLost: -19,
-					pointsLostMatch: {
+					pointsLoss: -19,
+					pointsLossMatch: {
 						'blue': 'c d',
 						'date': new Date( [ '2016 01 01 12:04' ] ),
 						'isWin': false,
@@ -229,24 +261,31 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2000,
 					rankMin: 1969,
-					seriesLooses: 4,
+					seriesLosses: 4,
 					seriesWins: 2,
-					wins: 2
+					seriesRankGain: 24,
+					seriesRankLoss: -30,
+					wins: 2,
+					current: {
+						gamesStreak: 3,
+						isWinning: false,
+						rank: 1,
+						rankStreak: 1
+					}
 				} );
 
 				rank.reload();
-				console.log( rank.getExpected( 'a', 'b', 'c', 'd' ) );
 
 				// 0 points game (expected: 10 : 7.12)
 				historyStorage.data.push( [ '2016 01 01 12:05', '@a @b 10 : 7 @c @d' ] );
 
 				expect( stats.getPlayerStats( 'a' ).records ).to.deep.equal( {
-					gainRankOnLost: 0,
-					gainRankOnLostMax: 0,
-					humiliations: { lost: 1, wins: 1 },
-					looses: 2,
-					lostRankOnWin: 1,
-					lostRankOnWinMax: -1,
+					gainRankOnLoss: 0,
+					gainRankOnLossMax: 0,
+					humiliations: { losses: 1, wins: 1 },
+					losses: 2,
+					lossRankOnWin: 1,
+					lossRankOnWinMax: -1,
 					noRankChange: 1,
 					pointsGain: 19,
 					pointsGainMatch: {
@@ -257,8 +296,8 @@ describe( 'Stats model', () => {
 						'red': 'a b',
 						'score': '10 : 0'
 					},
-					pointsLost: -23,
-					pointsLostMatch: {
+					pointsLoss: -23,
+					pointsLossMatch: {
 						'blue': 'a b',
 						'date': new Date( [ '2016 01 01 12:05' ] ),
 						'isWin': false,
@@ -268,9 +307,17 @@ describe( 'Stats model', () => {
 					},
 					rankMax: 2029,
 					rankMin: 1999,
-					seriesLooses: 2,
+					seriesLosses: 2,
 					seriesWins: 4,
-					wins: 7
+					seriesRankGain: 30,
+					seriesRankLoss: -24,
+					wins: 7,
+					current: {
+						gamesStreak: 4,
+						isWinning: true,
+						rank: 0,
+						rankStreak: -1
+					}
 				} );
 			} );
 		} );

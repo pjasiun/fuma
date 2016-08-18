@@ -57,6 +57,7 @@
 	<div class="row">
 		<div class="col-xs-8">
 			<h1>Player: <strong id="player-name"></strong></h1>
+			<div id="player-current"></div>
 		</div>
 		<div class="col-xs-4">
 			<div id="games-summary"></div>
@@ -109,8 +110,6 @@
 
 		var data = JSON.parse( responseText );
 
-		console.log( data );
-
 		jQuery( '#player-name' ).html( player );
 
 		drawChart( data.rankHistory );
@@ -120,6 +119,8 @@
 		renderLastGames( data.lastGames, player );
 
 		renderRecords( data.records, player );
+
+		renderCurrent( data.records.current );
 
 		renderTeamMates( addTeamMatesMedals( filterMinGames( data.teams.teamMates, 10 ) ), '#team-mates', 'teamMates' );
 
@@ -143,18 +144,20 @@
 		const strongPlayer = '<strong>' + player + '</strong>';
 
 		makeRow( 'Humiliations', records.humiliations.wins );
-		makeRow( 'Humiliated', records.humiliations.lost );
-		makeRow( 'Rank Gain on Lost (number of games)', records.gainRankOnLost );
-		makeRow( 'Rank Gain on Lost (max)', records.gainRankOnLostMax );
-		makeRow( 'Rank Lost on Win (number of games)', records.lostRankOnWin );
-		makeRow( 'Rank Lost on Win (max)', records.lostRankOnWinMax );
+		makeRow( 'Humiliated', records.humiliations.losses );
+		makeRow( 'Rank Gain on Loss (number of games)', records.gainRankOnLoss );
+		makeRow( 'Rank Gain on Loss (max)', records.gainRankOnLossMax );
+		makeRow( 'Rank Loss on Win (number of games)', records.lossRankOnWin );
+		makeRow( 'Rank Loss on Win (max)', records.lossRankOnWinMax );
 		makeRow( 'Pointless games', records.noRankChange );
 		makeRow( 'Max rank gain', '<strong>' + records.pointsGain + '</strong> ' +
 				renderMatch( records.pointsGainMatch ) );
-		makeRow( 'Max rank lost', '<strong>' + records.pointsLost + '</strong> ' +
-				renderMatch( records.pointsLostMatch ) );
-		makeRow( 'Wins series', records.seriesWins );
-		makeRow( 'Loses series', records.seriesLooses );
+		makeRow( 'Max rank loss', '<strong>' + records.pointsLoss + '</strong> ' +
+				renderMatch( records.pointsLossMatch ) );
+		makeRow( 'Longest Winning streak', records.seriesWins );
+		makeRow( 'Longest Losing streak', records.seriesLosses );
+		makeRow( 'Highest rank gain streak (points total)', records.seriesRankGain );
+		makeRow( 'Highest rank loss streak (points total)', records.seriesRankLoss );
 		makeRow( 'Max rank', records.rankMax );
 		makeRow( 'Min rank', records.rankMin );
 
@@ -176,14 +179,22 @@
 	function renderLastGames( lastGames, player ) {
 		var table = jQuery( '<table class="table table-striped table-condensed">' );
 		var tbody = jQuery( '<tbody>' );
-		var strongPlayer = '<strong>' + player + '</strong>';
+		var strongPlayer = '><strong>' + player + '</strong><';
 
 		for ( var lastGame of lastGames ) {
 			var row = jQuery( '<tr>' );
 
-			row.append( jQuery( '<td class="text-right">' ).html( lastGame.red.replace( player, strongPlayer ) ) );
+			row.append( jQuery( '<td class="text-right">' ).html(
+					lastGame.red
+							.split( ' ' ).map( linkToPlayer ).join( ' ' )
+							.replace( '>' + player + '<', strongPlayer ) )
+			);
 			row.append( jQuery( '<td class="text-center">' ).html( lastGame.score ) );
-			row.append( jQuery( '<td class="text-left">' ).html( lastGame.blue.replace( player, strongPlayer ) ) );
+			row.append( jQuery( '<td class="text-left">' ).html(
+					lastGame.blue
+							.split( ' ' ).map( linkToPlayer ).join( ' ' )
+							.replace( '>' + player + '<', strongPlayer ) )
+			);
 			row.append( jQuery( '<td class="text-right">' ).html( lastGame.rankChange ) );
 
 			if ( lastGame.rankChange > 0 ) {
@@ -210,11 +221,19 @@
 
 		data.addColumn( 'number', 'Game' );
 		data.addColumn( 'number', 'Rank' );
+		data.addColumn( { type: 'string', role: 'tooltip' } );
 
 		var game = 1;
 
+		var lastScore = 2000;
+
 		const mapped = history.map( function( entry ) {
-			return [ game++, entry[ 1 ] ];
+			const change = entry[ 2 ];
+			var toolTip = 'Game: ' + game + ' Rank: ' + entry[ 1 ] +
+					' (' + ( change > 0 ? '+' : '' ) + ( change ) + ')' +
+					'\n' + entry[ 3 ];
+			lastScore = entry[ 1 ];
+			return [ game++, entry[ 1 ], toolTip ];
 		} );
 
 		const hTicks = [];
@@ -256,7 +275,7 @@
 		data.addColumn( 'number', 'Number' );
 
 		data.addRows( [
-			[ 'Looses', records.looses ],
+			[ 'Losses', records.losses ],
 			[ 'Wins', records.wins ]
 		] );
 
@@ -290,7 +309,7 @@
 		headRow.append( jQuery( '<th>' ).html( 'player' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'games' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'wins' ) );
-		headRow.append( jQuery( '<th class="text-right">' ).html( 'looses' ) );
+		headRow.append( jQuery( '<th class="text-right">' ).html( 'losses' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'rank total' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'rank avg' ) );
 		headRow.append( jQuery( '<th class="text-right">' ).html( 'win ratio' ) );
@@ -309,10 +328,10 @@
 				row.addClass( 'danger' );
 			}
 
-			row.append( jQuery( '<td>' ).html( player.name + renderMedals( player.medals, medals ) ) );
+			row.append( jQuery( '<td>' ).html( linkToPlayer( player.name ) + renderMedals( player.medals, medals ) ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.games ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.wins ) );
-			row.append( jQuery( '<td class="text-right">' ).html( player.looses ) );
+			row.append( jQuery( '<td class="text-right">' ).html( player.losses ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.rankChangeTotal ) );
 			row.append( jQuery( '<td class="text-right">' ).html( parseFloat( player.rankChangeAvg ).toFixed( 2 ) ) );
 			row.append( jQuery( '<td class="text-right">' ).html( parseInt( player.winRatio * 100 ) + '%' ) );
@@ -322,7 +341,7 @@
 
 		table.append( tbody );
 
-		table.appendTo( renderTo ).tablesorter();;
+		table.appendTo( renderTo ).tablesorter();
 	}
 
 	var medalsDef = {
@@ -450,6 +469,31 @@
 		}
 
 		return players;
+	}
+
+	function linkToPlayer( playerName ) {
+		return '<a href="?player=' + playerName + '">' + playerName + '</a>';
+	}
+
+	function renderCurrent( current ) {
+		var gamesStreak = current.isWinning ? '📈' : '📉';
+		gamesStreak += ' Is on <strong>';
+
+		if ( current.isWinning ) {
+			gamesStreak += 'winning';
+		} else {
+			gamesStreak += 'losing';
+		}
+
+		gamesStreak += '</strong> streak: ' + current.gamesStreak + '.';
+
+		var rankStreak = 'Current rank change streak: <strong>' +
+				( current.rankStreak > 0 ? '+' : '' ) + current.rankStreak +
+				'</strong>.';
+
+		jQuery( '#player-current' )
+				.append( jQuery( '<p>' ).html( gamesStreak ) )
+				.append( jQuery( '<p>' ).html( rankStreak ) );
 	}
 </script>
 </body>

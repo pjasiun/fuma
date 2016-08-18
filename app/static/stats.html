@@ -60,7 +60,10 @@
 	<div class="row">
 		<div class="col-xs-12">
 			<h2>Rank history</h2>
-			<div id="rank-history" style="height: 800px;"></div>
+			<div id="rank-dashboard">
+				<div id="rank-history" style="height: 800px;"></div>
+				<div id="game-slider"></div>
+			</div>
 		</div>
 	</div>
 	<div class="row">
@@ -82,7 +85,7 @@
 </div>
 
 <script>
-	google.charts.load( 'current', { 'packages': [ 'corechart', 'timeline' ] } );
+	google.charts.load( 'current', { 'packages': [ 'corechart', 'timeline', 'controls' ] } );
 	google.charts.setOnLoadCallback( showStats );
 
 	function showStats() {
@@ -100,7 +103,7 @@
 
 		renderRecords( data.records );
 
-		renderRanking( data.players );
+		renderRanking( data.players, data.records );
 	}
 
 	function drawRankHistoryChart( history ) {
@@ -110,6 +113,8 @@
 		data.addColumn( 'number', 'Game' );
 		for ( var player of players ) {
 			data.addColumn( 'number', player );
+			data.addColumn( { type: 'string', role: 'tooltip' } );
+			data.addColumn( { type: 'boolean', role: 'certainty' } );
 		}
 
 		var game = 1;
@@ -120,7 +125,17 @@
 			var rankUpdate = [ game++ ];
 
 			for ( var rankPlayer of players ) {
+				var isScope = history[ rankPlayer ][ i ][ 4 ];
+				var change = history[ rankPlayer ][ i ][ 2 ];
+				var toolTip = '@' + rankPlayer + ':\n' + 'Game: ' + game + ' Rank: ' + history[ rankPlayer ][ i ][ 1 ];
+				if ( isScope ) {
+					toolTip +=
+							' (' + ( change > 0 ? '+' : '' ) + ( change ) + ')' +
+							'\n' + history[ rankPlayer ][ i ][ 3 ];
+				}
 				rankUpdate.push( history[ rankPlayer ][ i ][ 1 ] );
+				rankUpdate.push( toolTip );
+				rankUpdate.push( isScope );
 			}
 
 			historyUpdates.push( rankUpdate );
@@ -148,14 +163,29 @@
 			},
 			hAxis: {
 				title: 'Game',
-				ticks: hTicks,
 				minorGridlines: { count: 4 }
 			}
 		};
 
-		var chart = new google.visualization.LineChart( document.getElementById( 'rank-history' ) );
+		var dashboard = new google.visualization.Dashboard( document.getElementById( 'rank-dashboard' ) );
 
-		chart.draw( data, options );
+		var gameSlider = new google.visualization.ControlWrapper( {
+			'controlType': 'NumberRangeFilter',
+			'containerId': 'game-slider',
+			'options': {
+				'filterColumnLabel': 'Game'
+			}
+		} );
+
+		var chart = new google.visualization.ChartWrapper( {
+			'chartType': 'LineChart',
+			'containerId': 'rank-history',
+			'options': options
+		} );
+
+		dashboard.bind( gameSlider, chart );
+
+		dashboard.draw( data );
 	}
 
 	function drawKingTimeline( kings ) {
@@ -193,18 +223,20 @@
 		table.append( tbody );
 
 		makeRow( 'Humiliations', records.humiliations.wins );
-		makeRow( 'Humiliated', records.humiliations.lost );
+		makeRow( 'Humiliated', records.humiliations.losses );
 		makeRow( 'Pointless games', records.noRankChange );
 		makeRow( 'Wins total', records.wins );
-		makeRow( 'Loses total', records.looses );
-		makeRow( 'Rank Gain on Lost (number of games)', records.gainRankOnLost );
-		makeRow( 'Rank Gain on Lost (max)', records.gainRankOnLostMax );
-		makeRow( 'Rank Lost on Win (number of games)', records.lostRankOnWin );
-		makeRow( 'Rank Lost on Win (max)', records.lostRankOnWinMax );
+		makeRow( 'Loses total', records.losses );
+		makeRow( 'Rank Gain on Loss (number of games)', records.gainRankOnLoss );
+		makeRow( 'Rank Gain on Loss (max)', records.gainRankOnLossMax );
+		makeRow( 'Rank Loss on Win (number of games)', records.lossRankOnWin );
+		makeRow( 'Rank Loss on Win (max)', records.lossRankOnWinMax );
 		makeRow( 'Max rank gain', records.pointsGain );
-		makeRow( 'Max rank lost', records.pointsLost );
-		makeRow( 'Wins series', records.seriesWins );
-		makeRow( 'Loses series', records.seriesLooses );
+		makeRow( 'Max rank loss', records.pointsLoss );
+		makeRow( 'Longest Winning streak', records.seriesWins );
+		makeRow( 'Longest Losing streak', records.seriesLosses );
+		makeRow( 'Highest rank gain streak (points total)', records.seriesRankGain );
+		makeRow( 'Highest rank loss streak (points total)', records.seriesRankLoss );
 		makeRow( 'Max rank', records.rankMax );
 		makeRow( 'Min rank', records.rankMin );
 
@@ -212,7 +244,7 @@
 			var row = jQuery( '<tr>' );
 			row.append( jQuery( '<td>' ).html( title ) );
 			row.append( jQuery( '<td class="text-right">' ).html( data.record ) );
-			row.append( jQuery( '<td class="text-right">' ).html( data.holder ) );
+			row.append( jQuery( '<td class="text-right">' ).html( data.holder.split( ', ' ).map( linkToPlayer ).join( ', ' ) ) );
 
 			tbody.append( row );
 		}
@@ -220,13 +252,14 @@
 		table.appendTo( '#records' );
 	}
 
-	function renderRanking( players ) {
+	function renderRanking( players, records ) {
 		var table = jQuery( '<table class="table table-striped table-condensed">' );
 
 		var thead = jQuery( '<thead>' );
 		var theadRow = jQuery( '<tr>' );
 		theadRow.append( jQuery( '<th>' ).html( 'Player' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Score' ) );
+		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Last Change' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Matches' ) );
 		theadRow.append( jQuery( '<th class="text-right">' ).html( 'Last game' ) );
 		thead.append( theadRow );
@@ -238,17 +271,33 @@
 		table.append( tbody );
 
 		for ( var player of players ) {
+			var current = records.players[ player.name ].current;
+
 			var row = jQuery( '<tr>' );
 
-			row.append( jQuery( '<td>' ).html( '<a href="?player=' + player.name + '">' + player.name + '</a>' ) );
+			row.append( jQuery( '<td>' ).html(
+					linkToPlayer( player.name ) + ' ' + renderPlayerCurrentBadge( current )
+			) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.score ) );
+			row.append( jQuery( '<td class="text-right">' ).html( current.rank ) );
 			row.append( jQuery( '<td class="text-right">' ).html( player.matches ) );
 			row.append( jQuery( '<td class="text-right">' ).html( moment( player.lastGame ).fromNow() ) );
 
 			tbody.append( row );
 		}
 
-		table.appendTo( '#ranking' ).tablesorter();;
+		table.appendTo( '#ranking' ).tablesorter();
+	}
+
+	function renderPlayerCurrentBadge( current ) {
+		var tooltip = 'Is on ' + ( current.isWinning ? 'winning' : 'losing' ) + ' streak: ' + current.gamesStreak;
+		tooltip += '\n' + 'Streak rank change: ' + ( current.rankStreak > 0 ? '+' : '' ) + current.rankStreak;
+
+		return '<span title="' + tooltip + '">' + ( current.isWinning ? '📈' : '📉' ) + '</span>';
+	}
+
+	function linkToPlayer( playerName ) {
+		return '<a href="?player=' + playerName + '">' + playerName + '</a>';
 	}
 </script>
 

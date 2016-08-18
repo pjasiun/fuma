@@ -76,14 +76,35 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 
 	let lastPlayerScore = 2000;
 
+	// Used to render "certain" data points in google charts: https://google-developers.appspot.com/chart/interactive/docs/roles#certaintyrole
+	// Certainty role is used to render dashed line on cumulative rank chart when player wasn't participating in that game.
+	let lastUpdateWasPlayers = false;
+
+	let currentIndex = -1;
+
 	for ( let update of allUpdates ) {
+		currentIndex++;
 		const playerChange = getPlayerChange( player, update );
 
 		if ( playerChange ) {
-			rankHistory.push( [ update.match.date, playerChange.newScore ] )
+			rankHistory.push( [
+				update.match.date,
+				playerChange.newScore,
+				playerChange.newScore - playerChange.oldScore,
+				update.match.toString(),
+				true
+			] );
 			lastPlayerScore = playerChange.newScore;
+
+			// Change previous data point to certain in order to render this change as solid line on google charts.
+			if ( currentIndex > 1 && !lastUpdateWasPlayers ) {
+				rankHistory[ currentIndex - 1 ][ 4 ] = true;
+			}
+
+			lastUpdateWasPlayers = true;
 		} else if ( includeOthers ) {
-			rankHistory.push( [ update.match.date, lastPlayerScore ] )
+			lastUpdateWasPlayers = false;
+			rankHistory.push( [ update.match.date, lastPlayerScore, 0, update.match.toString(), lastUpdateWasPlayers ] );
 		}
 	}
 
@@ -93,18 +114,20 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 function getRecords( allUpdates, player ) {
 	const max = {
 		wins: 0,
-		looses: 0,
+		losses: 0,
 		seriesWins: 0,
-		seriesLooses: 0,
+		seriesLosses: 0,
+		seriesRankGain: 0,
+		seriesRankLoss: 0,
 		pointsGain: 0,
 		pointsGainMatch: false,
-		pointsLost: 0,
-		pointsLostMatch: false,
-		humiliations: { wins: 0, lost: 0 },
-		gainRankOnLost: 0,
-		gainRankOnLostMax: 0,
-		lostRankOnWin: 0,
-		lostRankOnWinMax: 0,
+		pointsLoss: 0,
+		pointsLossMatch: false,
+		humiliations: { wins: 0, losses: 0 },
+		gainRankOnLoss: 0,
+		gainRankOnLossMax: 0,
+		lossRankOnWin: 0,
+		lossRankOnWinMax: 0,
 		noRankChange: 0,
 		rankMax: 2000,
 		rankMin: 2000
@@ -112,6 +135,9 @@ function getRecords( allUpdates, player ) {
 
 	let currentWins = 0;
 	let currentLosses = 0;
+
+	let currentRankSerries = 0;
+	let rankChange = 0;
 
 	for ( let update of allUpdates ) {
 		const change = getPlayerChange( player, update );
@@ -128,7 +154,7 @@ function getRecords( allUpdates, player ) {
 			max.rankMin = change.newScore;
 		}
 
-		const rankChange = getRankChange( change );
+		rankChange = getRankChange( change );
 
 		if ( isWin( player, update ) ) {
 			currentWins += 1;
@@ -145,10 +171,10 @@ function getRecords( allUpdates, player ) {
 			}
 
 			if ( rankChange < 0 ) {
-				max.lostRankOnWin += 1;
+				max.lossRankOnWin += 1;
 
-				if ( rankChange < max.lostRankOnWinMax ) {
-					max.lostRankOnWinMax = rankChange;
+				if ( rankChange < max.lossRankOnWinMax ) {
+					max.lossRankOnWinMax = rankChange;
 				}
 			}
 
@@ -160,34 +186,61 @@ function getRecords( allUpdates, player ) {
 			currentLosses += 1;
 			currentWins = 0;
 
-			max.looses += 1;
+			max.losses += 1;
 
-			if ( currentLosses > max.seriesLooses ) {
-				max.seriesLooses = currentLosses;
+			if ( currentLosses > max.seriesLosses ) {
+				max.seriesLosses = currentLosses;
 			}
 
 			if ( update.match.blueScore === 0 ) {
-				max.humiliations.lost += 1;
+				max.humiliations.losses += 1;
 			}
 
 			if ( rankChange > 0 ) {
-				max.gainRankOnLost += 1;
+				max.gainRankOnLoss += 1;
 
-				if ( rankChange > max.gainRankOnLostMax ) {
-					max.gainRankOnLostMax = rankChange;
+				if ( rankChange > max.gainRankOnLossMax ) {
+					max.gainRankOnLossMax = rankChange;
 				}
 			}
 
-			if ( rankChange < max.pointsLost ) {
-				max.pointsLost = rankChange;
-				max.pointsLostMatch = getGameData( update, change, player );
+			if ( rankChange < max.pointsLoss ) {
+				max.pointsLoss = rankChange;
+				max.pointsLossMatch = getGameData( update, change, player );
 			}
 		}
 
 		if ( rankChange === 0 ) {
 			max.noRankChange += 1;
 		}
+
+		if ( rankChange > 0 ) {
+			if ( currentRankSerries < 0 ) {
+				if ( currentRankSerries < max.seriesRankLoss ) {
+					max.seriesRankLoss = currentRankSerries;
+				}
+				currentRankSerries = 0;
+			}
+		}
+
+		if ( rankChange < 0 ) {
+			if ( currentRankSerries > 0 ) {
+				if ( currentRankSerries > max.seriesRankGain ) {
+					max.seriesRankGain = currentRankSerries;
+				}
+				currentRankSerries = 0;
+			}
+		}
+
+		currentRankSerries += rankChange;
 	}
+
+	max.current = {
+		isWinning: currentWins > 0,
+		gamesStreak: currentWins ? currentWins : currentLosses,
+		rankStreak: currentRankSerries,
+		rank: rankChange
+	};
 
 	return max;
 }
@@ -261,11 +314,11 @@ function calculateRecords( allUpdates, players ) {
 		records[ player.name ] = getRecords( allUpdates, player.name );
 	}
 
-	const allRecords = { humiliations: {} };
+	const allRecords = { humiliations: {}, players: records };
 
 	const maxRecords = [
-		'gainRankOnLost', 'gainRankOnLostMax', 'looses', 'wins', 'pointsGain', 'lostRankOnWin', 'rankMax', 'seriesLooses', 'seriesWins',
-		'noRankChange'
+		'gainRankOnLoss', 'gainRankOnLossMax', 'losses', 'wins', 'pointsGain', 'lossRankOnWin', 'rankMax', 'seriesLosses', 'seriesWins',
+		'noRankChange', 'seriesRankGain'
 	];
 
 	for ( let record of maxRecords ) {
@@ -286,7 +339,7 @@ function calculateRecords( allUpdates, players ) {
 		allRecords[ record ] = { record: recordMax, holder: holder };
 	}
 
-	for ( let record of [ 'wins', 'lost' ] ) {
+	for ( let record of [ 'wins', 'losses' ] ) {
 		let recordMax = 0;
 		let holder = '';
 
@@ -304,7 +357,7 @@ function calculateRecords( allUpdates, players ) {
 		allRecords.humiliations[ record ] = { record: recordMax, holder: holder };
 	}
 
-	for ( let record of [ 'lostRankOnWinMax', 'pointsLost', 'rankMin' ] ) {
+	for ( let record of [ 'lossRankOnWinMax', 'pointsLoss', 'rankMin', 'seriesRankLoss' ] ) {
 		let recordMin = 2000;
 		let holder = '';
 
@@ -378,7 +431,7 @@ function getPlayerTeams( allUpdates, player ) {
 				name: player,
 				wins: playerData.wins,
 				games: playerData.games,
-				looses: playerData.games - playerData.wins,
+				losses: playerData.games - playerData.wins,
 				winRatio: playerData.wins / playerData.games,
 				rankChangeTotal: playerData.rankChangeTotal,
 				rankChangeAvg: playerData.rankChangeTotal / playerData.games
