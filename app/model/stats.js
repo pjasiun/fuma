@@ -98,7 +98,9 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 
 			// Change previous data point to certain in order to render this change as solid line on google charts.
 			if ( currentIndex > 1 && !lastUpdateWasPlayers ) {
-				rankHistory[ currentIndex - 1 ][ 4 ] = true;
+				if ( rankHistory[ currentIndex - 1 ] ) {
+					rankHistory[ currentIndex - 1 ][ 4 ] = true;
+				}
 			}
 
 			lastUpdateWasPlayers = true;
