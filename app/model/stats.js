@@ -106,7 +106,7 @@ function calculatePlayerRankHistory( allUpdates, player, includeOthers ) {
 			lastUpdateWasPlayers = true;
 		} else if ( includeOthers ) {
 			lastUpdateWasPlayers = false;
-			rankHistory.push( [ update.match.date, lastPlayerScore, 0, update.match.toString(), lastUpdateWasPlayers ] );
+			rankHistory.push( [ update.match.date, lastPlayerScore, 0, false, lastUpdateWasPlayers ] );
 		}
 	}
 
