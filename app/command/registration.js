@@ -2,6 +2,9 @@
 
 const registrationRegExp = /^(\+|-)\s*((\s*@[\S]+)*)$/;
 
+const RED_PLAYERS = ':red_circle:';
+const BLUE_PLAYERS = ':large_blue_circle:';
+
 class Registration {
 	constructor( context, timeToLive ) {
 		// Default time to live is 8 hrs
@@ -72,9 +75,18 @@ class Registration {
 
 				const expected = context.rank.getExpected( players[ 0 ].name, players[ 3 ].name, players[ 1 ].name, players[ 2 ].name );
 
-				asyncResponse( request.response_url, ':fire: @' + players[ 0 ].name + ' @' + players[ 3 ].name +
-					' (' + expected.red + ' : ' + expected.blue + ')' +
-					' @' + players[ 1 ].name + ' @' + players[ 2 ].name );
+				const isTeamARed = Math.random() >= 0.5;
+				const teamAColor = isTeamARed ? RED_PLAYERS : BLUE_PLAYERS;
+				const teamBColor = isTeamARed ? BLUE_PLAYERS : RED_PLAYERS;
+
+				asyncResponse( request.response_url,
+					':fire: ' +
+					'@' + players[ 0 ].name + ' @' + players[ 3 ].name +
+					' ' + teamAColor +
+					' (' + expected.red + ' : ' + expected.blue + ') ' +
+					' ' + teamBColor +
+					'@' + players[ 1 ].name + ' @' + players[ 2 ].name
+				);
 			}
 		}
 
