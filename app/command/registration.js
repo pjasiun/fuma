@@ -79,14 +79,11 @@ class Registration {
 				const teamAColor = isTeamARed ? RED_PLAYERS : BLUE_PLAYERS;
 				const teamBColor = isTeamARed ? BLUE_PLAYERS : RED_PLAYERS;
 
-				asyncResponse( request.response_url,
-					':fire: ' +
-					'@' + players[ 0 ].name + ' @' + players[ 3 ].name +
-					' ' + teamAColor +
-					' (' + expected.red + ' : ' + expected.blue + ') ' +
-					' ' + teamBColor +
-					'@' + players[ 1 ].name + ' @' + players[ 2 ].name
-				);
+				const teamA = `@${players[ 0 ].name} @${players[ 3 ].name}`;
+				const teamB = `@${players[ 1 ].name} @${players[ 2 ].name}`;
+				const expectedString = `(${expected.red} : ${expected.blue})`;
+
+				asyncResponse( request.response_url, `:fire: ${teamA} ${teamAColor} ${expectedString} ${teamBColor} ${teamB}` );
 			}
 		}
 
