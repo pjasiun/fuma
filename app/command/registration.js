@@ -4,13 +4,16 @@ const registrationRegExp = /^(\+|-)\s*((\s*@[\S]+)*)$/;
 
 const RED_PLAYERS = ':red_circle:';
 const BLUE_PLAYERS = ':large_blue_circle:';
+const RANDOM_INDICATOR = ':slot_machine:';
 
 class Registration {
-	constructor( context, timeToLive ) {
+	constructor( context, config ) {
 		// Default time to live is 8 hrs
-		this.timeToLive = timeToLive ? timeToLive : 8 * 60 * 60 * 1000;
+		this.timeToLive = config.timeToLive ? config.timeToLive : 8 * 60 * 60 * 1000;
 		this.context = context;
 		this.registered = [];
+		this.randomize = !!config.randomize;
+		this.randomizeFactor = config.randomizeFactor;
 	}
 
 	handleRequest( request, asyncResponse ) {
@@ -35,6 +38,8 @@ class Registration {
 		}
 
 		const isAdd = registrationValues[ 1 ] == '+';
+
+		const isRandomized = this.randomize && Math.random() <= this.randomizeFactor;
 
 		for ( let user of users ) {
 			if ( isAdd ) {
@@ -69,9 +74,13 @@ class Registration {
 			} else {
 				const players = registered.splice( -4 );
 
-				players.sort( ( playerA, playerB ) => {
-					return context.rank.getPlayer( playerA.name ).score - context.rank.getPlayer( playerB.name ).score;
-				} );
+				if ( isRandomized ) {
+					shuffle( players );
+				} else {
+					players.sort( ( playerA, playerB ) => {
+						return context.rank.getPlayer( playerA.name ).score - context.rank.getPlayer( playerB.name ).score;
+					} );
+				}
 
 				const expected = context.rank.getExpected( players[ 0 ].name, players[ 3 ].name, players[ 1 ].name, players[ 2 ].name );
 
@@ -83,7 +92,9 @@ class Registration {
 				const teamB = `@${players[ 1 ].name} @${players[ 2 ].name}`;
 				const expectedString = `(${expected.red} : ${expected.blue})`;
 
-				asyncResponse( request.response_url, `:fire: ${teamA} ${teamAColor} ${expectedString} ${teamBColor} ${teamB}` );
+				const isRandomizedMessage = isRandomized ? '' : ' ' + RANDOM_INDICATOR + 'This game is randomized!';
+
+				asyncResponse( request.response_url, `:fire: ${teamA} ${teamAColor} ${expectedString} ${teamBColor} ${teamB}${isRandomizedMessage}` );
 			}
 		}
 
@@ -116,6 +127,31 @@ class Registration {
 
 		return this.registered.length !== registeredBefore;
 	}
+}
+
+/**
+ * @link http://stackoverflow.com/a/2450976
+ *
+ * @param array
+ * @returns {*}
+ */
+function shuffle( array ) {
+	var currentIndex = array.length, temporaryValue, randomIndex;
+
+	// While there remain elements to shuffle...
+	while ( 0 !== currentIndex ) {
+
+		// Pick a remaining element...
+		randomIndex = Math.floor( Math.random() * currentIndex );
+		currentIndex -= 1;
+
+		// And swap it with the current element.
+		temporaryValue = array[ currentIndex ];
+		array[ currentIndex ] = array[ randomIndex ];
+		array[ randomIndex ] = temporaryValue;
+	}
+
+	return array;
 }
 
 module.exports = Registration;

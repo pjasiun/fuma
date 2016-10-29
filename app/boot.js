@@ -19,29 +19,29 @@ const storageRepository = new StorageRepository( '../data/' );
 const history = new History( storageRepository.createStorage( 'history', [] ) );
 const aliases = new Aliases( storageRepository.createStorage( 'aliases', {} ) );
 
-const rank = new Rank( history );
+const rank = new Rank( history, { numberOfDaysToBeAnOldBoy: 30, numberOfMatchesToStopBeingARookie: 20 } );
 rank.reload();
 
 const controller = new Controller( storageRepository, { history: history, aliases: aliases, rank: rank, config: config } );
 
 const commands = [
-	'aliases',
-	'delete-alias',
-	'expected',
-	'help',
-	'history',
-	'rank',
-	'registration',
-	'remove',
-	'result',
-	'set-alias',
-	'stats',
-	'update'
+	{ name: 'aliases' },
+	{ name: 'delete-alias' },
+	{ name: 'expected' },
+	{ name: 'help' },
+	{ name: 'history' },
+	{ name: 'rank' },
+	{ name: 'registration', 'config': { timeToLive: 8 * 60 * 60 * 1000, randomize: true, randomizeFactor: 0.2 } },
+	{ name: 'remove' },
+	{ name: 'result' },
+	{ name: 'set-alias' },
+	{ name: 'stats' },
+	{ name: 'update' }
 ];
 
 for ( let command of commands ) {
-	const Command = require( './command/' + command );
-	controller.addCommand( new Command( controller ) );
+	const Command = require( './command/' + command.name );
+	controller.addCommand( new Command( controller, command.config ) );
 }
 
 const server = http.createServer( function( request, response ) {
