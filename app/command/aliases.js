@@ -21,8 +21,7 @@ class Aliases {
 		}
 
 		return {
-			'text': '```' + table.toString() + '```',
-			'response_type': 'in_channel'
+			'text': '```' + table.toString() + '```'
 		};
 	}
 }
