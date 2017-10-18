@@ -3,13 +3,15 @@
 const elo = require( 'elo-rank' )( 40 );
 const Match = require( './match' );
 
-const numberOfDaysToBeAnOldBoy = 30;
-const numberOfMatchesToStopBeingARookie = 20;
-
 class Rank {
-	constructor( history ) {
+	constructor( history, config ) {
 		this.players = new Map();
 		this.history = history;
+
+		// Default config
+		config = config || {};
+		this.numberOfDaysToBeAnOldBoy = config.numberOfDaysToBeAnOldBoy || 30;
+		this.numberOfMatchesToStopBeingARookie = config.numberOfMatchesToStopBeingARookie || 20;
 	}
 
 	getPlayer( name ) {
@@ -122,10 +124,10 @@ class Rank {
 		const includeOldBoys = options && options.oldBoys || false;
 		const now = new Date();
 
-		const lastDayToBeAnOldBoy = new Date( now.getFullYear(), now.getMonth(), now.getDay() - numberOfDaysToBeAnOldBoy );
+		const lastDayToBeAnOldBoy = new Date( now.getFullYear(), now.getMonth(), now.getDay() - this.numberOfDaysToBeAnOldBoy );
 
 		return players.filter( ( player ) => {
-			const isRemoveRookie = !includeRookies && player.matches < numberOfMatchesToStopBeingARookie;
+			const isRemoveRookie = !includeRookies && player.matches < this.numberOfMatchesToStopBeingARookie;
 			const isRemoveOldBoy = !includeOldBoys && lastDayToBeAnOldBoy > player.lastGame;
 
 			return !( isRemoveRookie || isRemoveOldBoy );
@@ -141,7 +143,10 @@ class Rank {
 	}
 
 	*[ Symbol.iterator ]() {
-		const rankForUpdates = new Rank( this.history );
+		const rankForUpdates = new Rank( this.history, {
+			numberOfDaysToBeAnOldBoy: this.numberOfDaysToBeAnOldBoy,
+			numberOfMatchesToStopBeingARookie: this.numberOfMatchesToStopBeingARookie
+		} );
 
 		for ( let i = 0; i < this.history.length; i++ ) {
 			const match = rankForUpdates.addMatch( Match.createFromText( this.history.getEntry( i ).match, this.history.getEntry( i ).date ) );
