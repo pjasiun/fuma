@@ -31,7 +31,7 @@ const commands = [
 	{ name: 'help' },
 	{ name: 'history' },
 	{ name: 'rank' },
-	{ name: 'registration', 'config': { timeToLive: 8 * 60 * 60 * 1000, randomize: true, randomizeFactor: 0.2 } },
+	{ name: 'registration', 'config': { timeToLive: 8 * 60 * 60 * 1000, randomize: true, randomizeFactor: 1 } },
 	{ name: 'remove' },
 	{ name: 'result' },
 	{ name: 'set-alias' },

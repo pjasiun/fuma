@@ -92,7 +92,7 @@ class Registration {
 				const teamB = `@${players[ 1 ].name} @${players[ 2 ].name}`;
 				const expectedString = `(${expected.red} : ${expected.blue})`;
 
-				const isRandomizedMessage = isRandomized ? '' : ' ' + RANDOM_INDICATOR + 'This game is randomized!';
+				const isRandomizedMessage = isRandomized ? ' ' + RANDOM_INDICATOR : '';
 
 				asyncResponse( request.response_url, `:fire: ${teamA} ${teamAColor} ${expectedString} ${teamBColor} ${teamB}${isRandomizedMessage}` );
 			}
