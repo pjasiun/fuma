@@ -1,6 +1,7 @@
 'use strict';
 
-const elo = require( 'elo-rank' )( 40 );
+const Elo = require( 'elo-rank' );
+const elo = new Elo( 40 );
 const Match = require( './match' );
 
 class Rank {
