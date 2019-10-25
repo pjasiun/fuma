@@ -76,7 +76,7 @@ If at the end of the day some users are still added, but there are less then 4 p
 
 When 4 players are added Fuma will show you a proposal of teams, sides and the expected result based on the users' current rank.
 
-## Expected result
+### Expected result
 
 The expected result means that players on the side which gets more points than expected, get points after the match. Thanks to the Elo rank system, one does not need to win the match to get points. He/She needs to make progress comparing to his/her opponents.
 
