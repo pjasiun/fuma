@@ -1,5 +1,10 @@
 # Fuma - Fussball Manager for Slack
 
+<img align="center" src="https://raw.githubusercontent.com/pjasiun/fuma/master/images/slack.png">
+
+
+<img align="center" src="https://raw.githubusercontent.com/pjasiun/fuma/master/images/rank.png">
+
 [![Build Status](https://travis-ci.org/pjasiun/fuma.svg?branch=master)](https://travis-ci.org/pjasiun/fuma)
 [![codecov](https://codecov.io/gh/pjasiun/fuma/branch/master/graph/badge.svg)](https://codecov.io/gh/pjasiun/fuma)
 
