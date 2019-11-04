@@ -11,7 +11,7 @@ Fuma is a Slack bot for managing table soccer games. Fuma helps you implement [E
 
 What do you need?
  - access to Slack custom integrations in your organization,
- - a server that supports Node.js.
+ - a server that supports Node.js (tested on v6.17.1), only port 80 need to be open,
 
 1. Create a new [slash command](https://api.slack.com/interactivity/slash-commands) for Slack:
   - command, Customize Name, Customize Icon - use any you want,
@@ -29,8 +29,18 @@ What do you need?
 
 4. Upload the project on the Node.js server. 
 5. Run `app.js`.
+6. Set permissions:
+
+```
+chmod 777 data
+chmod +x app.js
+```
+
+7. Check if everything works fine:
 
 Try using `/commandName help` in your Slack to check if everything works correctly.
+
+It is also recommended to add some aliased and matches to data and restart the server to make sure that persistence store works fine and you will not loose your data when the server restarts.
 
 ## Feature
 
